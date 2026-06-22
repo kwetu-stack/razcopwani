@@ -3,6 +3,7 @@ from datetime import date, time, timedelta
 from random import choice, randint, random, seed as random_seed
 
 from app import create_app
+from data.product_catalog import REAL_PRODUCTS
 from models import (
     ActionPlan,
     Channel,
@@ -37,28 +38,6 @@ TERRITORIES = [
     "Lamu",
 ]
 CHANNELS = ["General Trade", "Modern Trade", "HORECA", "Institutions", "Distributors"]
-PRODUCTS = [
-    ("Vanilla Ice Cream", "Ice Cream", "Razco", "1L", 650),
-    ("Chocolate Ice Cream", "Ice Cream", "Razco", "1L", 670),
-    ("Strawberry Ice Cream", "Ice Cream", "Razco", "1L", 660),
-    ("Yoghurt 250ml", "Yoghurt", "Razco", "250ml", 90),
-    ("Yoghurt 500ml", "Yoghurt", "Razco", "500ml", 160),
-    ("Drinking Yoghurt", "Yoghurt", "Razco", "300ml", 120),
-    ("Fresh Milk 500ml", "Milk", "Razco", "500ml", 80),
-    ("Fresh Milk 1L", "Milk", "Razco", "1L", 150),
-    ("UHT Milk 500ml", "Milk", "Razco", "500ml", 95),
-    ("UHT Milk 1L", "Milk", "Razco", "1L", 180),
-    ("Mayonnaise 250g", "Sauces", "Razco", "250g", 220),
-    ("Mayonnaise 500g", "Sauces", "Razco", "500g", 390),
-    ("Tomato Sauce", "Sauces", "Razco", "500g", 210),
-    ("Chilli Sauce", "Sauces", "Razco", "250g", 180),
-    ("Burger Sauce", "Sauces", "Razco", "250g", 240),
-    ("Frozen Pastries", "Frozen Foods", "Razco", "12pc", 520),
-    ("Croissants", "Bakery", "Razco", "6pc", 360),
-    ("Muffins", "Bakery", "Razco", "6pc", 330),
-    ("Cake Mix", "Bakery", "Razco", "1kg", 450),
-    ("Whipping Cream", "Frozen Foods", "Razco", "1L", 480),
-]
 
 
 def reset_database():
@@ -93,17 +72,17 @@ def create_channels():
 
 def create_products():
     rows = []
-    for index, (name, category, brand, unit, price) in enumerate(PRODUCTS, start=1):
+    for product in REAL_PRODUCTS:
         rows.append(
             Product(
-                product_code=f"PRD-{index:03d}",
-                product_name=name,
-                category=category,
-                brand=brand,
-                unit_size=unit,
-                selling_price=price,
-                status="Active" if index < 19 else choice(["Active", "Discontinued", "Development"]),
-                notes=f"{name} portfolio item for Coast Region.",
+                product_code=product["product_code"],
+                product_name=product["product_name"],
+                category=product["category"],
+                brand=product["brand"],
+                unit_size=product["unit_size"],
+                selling_price=0,
+                status="Active",
+                notes="Actual Razco product catalog item.",
             )
         )
     db.session.add_all(rows)

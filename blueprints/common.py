@@ -16,6 +16,7 @@ from flask import (
 from flask_login import current_user, login_required
 from sqlalchemy import String, cast, func, or_
 
+from data.product_catalog import PRODUCT_CATEGORIES
 from models import (
     ActionPlan,
     Channel,
@@ -85,6 +86,18 @@ def choices_from_model(model, value_field, label_field):
     ]
 
 
+def filter_options(config):
+    options = {}
+    for field, source in config.get("filter_choices", {}).items():
+        if source == "distinct":
+            column = getattr(config["model"], field)
+            rows = db.session.query(column).filter(column.isnot(None)).distinct().order_by(column).all()
+            options[field] = [row[0] for row in rows if row[0]]
+        else:
+            options[field] = source
+    return options
+
+
 def module_config():
     return {
         "swot": {
@@ -141,11 +154,16 @@ def module_config():
             "url": "/products",
             "search": ["product_name", "product_code", "category", "brand"],
             "filters": ["category", "brand", "status"],
+            "filter_choices": {
+                "category": PRODUCT_CATEGORIES,
+                "brand": "distinct",
+                "status": ["Active", "Inactive", "Discontinued", "Development"],
+            },
             "table": ["product_code", "product_name", "category", "brand", "unit_size", "selling_price", "status"],
             "fields": [
                 ("product_code", "text", None, True),
                 ("product_name", "text", None, True),
-                ("category", "select", ["Ice Cream", "Yoghurt", "Milk", "Sauces", "Bakery", "Frozen Foods", "Desserts", "Beverages", "Other"], True),
+                ("category", "select", PRODUCT_CATEGORIES, True),
                 ("brand", "text", None, False),
                 ("unit_size", "text", None, False),
                 ("selling_price", "number", None, False),
@@ -494,6 +512,7 @@ def register_crud(module_key):
             pagination=pagination,
             kpis=kpis,
             chart=chart_data(config),
+            filter_options=filter_options(config),
             channels=choices_from_model(Channel, "id", "channel_name"),
             customers=choices_from_model(Customer, "id", "customer_name"),
             routes=choices_from_model(Route, "id", "route_name"),

@@ -46,6 +46,13 @@
           <select class="form-select" name="{{ field }}"><option value="">All</option>{% for id,label in customers %}<option value="{{ id }}" {% if request_args.get(field)==id %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
           {% elif field == 'route_id' %}
           <select class="form-select" name="{{ field }}"><option value="">All</option>{% for id,label in routes %}<option value="{{ id }}" {% if request_args.get(field)==id %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+          {% elif filter_options and field in filter_options %}
+          <select class="form-select" name="{{ field }}">
+            <option value="">All</option>
+            {% for option in filter_options[field] %}
+            <option value="{{ option }}" {% if request_args.get(field)==option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
           {% else %}
           <input class="form-control" name="{{ field }}" value="{{ request_args.get(field,'') }}" placeholder="All">
           {% endif %}
