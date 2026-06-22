@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | RAZCO PWANI™{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Command center for Coast Region growth, execution, opportunities and actions.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-outline-secondary" href="{{ url_for('reports.index') }}">Monthly Review</a>
+    {% if current_user.is_admin %}
+    <a class="btn btn-cyan" href="{{ url_for('visits.create') }}">New Visit</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-3 kpi-row">
+  {% for label, value, trend in kpis %}
+  <div class="col-6 col-xl-2"><div class="kpi-card"><span>{{ label }}</span><strong>{{ value }}</strong><small>{{ trend }}</small></div></div>
+  {% endfor %}
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-4"><div class="card kwetu-card h-100"><h2>Opportunity Pipeline</h2><canvas id="pipelineChart" height="220"></canvas></div></div>
+  <div class="col-lg-4"><div class="card kwetu-card h-100"><h2>Territory Customer Base</h2><canvas id="territoryChart" height="220"></canvas></div></div>
+  <div class="col-lg-4"><div class="card kwetu-card h-100"><h2>Visit Performance</h2><canvas id="visitChart" height="220"></canvas></div></div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-4">
+    <div class="card kwetu-card h-100">
+      <h2>Quick Insights</h2>
+      <ul class="metric-list">{% for label,value in insights %}<li><span>{{ label }}</span><strong>{{ value }}</strong></li>{% endfor %}</ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card kwetu-card h-100">
+      <h2>Alerts</h2>
+      <ul class="compact-list">
+        <li>{{ alerts.overdue|length }} overdue high-priority actions</li>
+        <li>{{ alerts.missed|length }} missed visits require follow-up</li>
+        <li>{{ alerts.aging|length }} aging opportunities over 60 days</li>
+        <li>{{ alerts.recoveries|length }} high probability recoveries</li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card kwetu-card h-100">
+      <h2>Quick Actions</h2>
+      <div class="quick-actions">
+        {% if current_user.is_admin %}
+        <a class="btn btn-cyan" href="{{ url_for('visits.create') }}">New Visit</a>
+        <a class="btn btn-cyan" href="{{ url_for('opportunities.create') }}">New Opportunity</a>
+        <a class="btn btn-cyan" href="{{ url_for('competitors.create') }}">New Competitor Activity</a>
+        <a class="btn btn-cyan" href="{{ url_for('action_plans.create') }}">New Action Plan</a>
+        {% else %}
+        <a class="btn btn-outline-secondary" href="{{ url_for('visits.index') }}">View Visits</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('opportunities.index') }}">View Opportunities</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('competitors.index') }}">View Competitors</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('action_plans.index') }}">View Action Plans</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  {% for title, items in [('Recent Visits', recent.visits), ('Recent Opportunities', recent.opportunities), ('Recent Competitor Activities', recent.competitors), ('Recent Action Plans', recent.actions)] %}
+  <div class="col-lg-3 col-md-6">
+    <div class="card kwetu-card h-100">
+      <h2>{{ title }}</h2>
+      <ul class="compact-list">
+        {% for item in items %}
+        <li>{{ item.visit_number if item.visit_number is defined else item.opportunity_code if item.opportunity_code is defined else item.competitor_name if item.competitor_name is defined else item.action_code }} - {{ item.status if item.status is defined else item.visit_status }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+renderChart('pipelineChart', 'bar', {{ opportunity_stage['labels']|tojson }}, {{ opportunity_stage['values']|tojson }});
+renderChart('territoryChart', 'pie', {{ territory_customers['labels']|tojson }}, {{ territory_customers['values']|tojson }});
+renderChart('visitChart', 'bar', {{ visit_status['labels']|tojson }}, {{ visit_status['values']|tojson }});
+</script>
+{% endblock %}

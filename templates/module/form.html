@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ config.title }} Form | RAZCO PWANI™{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>{{ config.title }} Form</h1><p>Create or update a {{ config.title.lower() }} record.</p></div>
+  <a class="btn btn-outline-secondary" href="{{ url_for(config.endpoint ~ '.index') }}">Back</a>
+</div>
+<form method="post" class="card kwetu-card form-card">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="row g-3">
+  {% for field, kind, choices, required in config.fields %}
+    <div class="{% if kind == 'textarea' %}col-12{% else %}col-md-6 col-xl-4{% endif %}">
+      <label class="form-label">{{ field.replace('_',' ').title() }}{% if required %} <span class="required">*</span>{% endif %}</label>
+      {% set value = serialize_value(row|attr(field)) %}
+      {% if kind == 'textarea' %}
+      <textarea class="form-control" name="{{ field }}" rows="3" {% if required %}required{% endif %}>{{ value }}</textarea>
+      {% elif kind in ['select','fk_channel','fk_customer','fk_route'] %}
+      <select class="form-select" name="{{ field }}" {% if required %}required{% endif %}>
+        <option value="">Select</option>
+        {% if kind == 'fk_channel' %}
+          {% for id,label in channels %}<option value="{{ id }}" {% if value|string == id|string %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        {% elif kind == 'fk_customer' %}
+          {% for id,label in customers %}<option value="{{ id }}" {% if value|string == id|string %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        {% elif kind == 'fk_route' %}
+          {% for id,label in routes %}<option value="{{ id }}" {% if value|string == id|string %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        {% else %}
+          {% for choice in choices %}<option value="{{ choice }}" {% if value|string == choice|string %}selected{% endif %}>{{ choice }}</option>{% endfor %}
+        {% endif %}
+      </select>
+      {% else %}
+      <input class="form-control" type="{{ kind }}" name="{{ field }}" value="{{ value }}" {% if kind == 'number' %}step="any"{% endif %} {% if required %}required{% endif %}>
+      {% endif %}
+    </div>
+  {% endfor %}
+  </div>
+  <div class="mt-4 d-flex gap-2">
+    <button class="btn btn-cyan">Save Record</button>
+    <a class="btn btn-outline-secondary" href="{{ url_for(config.endpoint ~ '.index') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

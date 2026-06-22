@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Reports | RAZCO PWANI™{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Reports</h1><p>Executive and operational reports generated from live database records.</p></div>
+  <span class="badge text-bg-info">Generated {{ generated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+</div>
+
+<div class="row g-3 kpi-row">
+  {% for label,value in metrics.items() %}
+  <div class="col-6 col-lg-3"><div class="kpi-card"><span>{{ label }}</span><strong>{{ 'KES {:,.0f}'.format(value) if 'Value' in label else value }}</strong><small>Live report metric</small></div></div>
+  {% endfor %}
+</div>
+
+<div class="row g-3 mt-1">
+  {% for category, reports in categories.items() %}
+  <div class="col-lg-4 col-md-6">
+    <div class="card kwetu-card h-100">
+      <h2>{{ category }}</h2>
+      <ul class="report-list">
+        {% for report in reports %}
+        <li><span>{{ report }}</span><a href="javascript:window.print()">Print</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card kwetu-card mt-3">
+  <h2>Module Exports</h2>
+  <div class="export-grid">
+    {% for key,label in [('swot','SWOT'),('customers','Customers'),('products','Products'),('channels','Channels'),('routes','Routes'),('visits','Visits'),('opportunities','Opportunities'),('competitors','Competitors'),('lost_accounts','Lost Accounts'),('action_plans','Action Plans')] %}
+    <div>
+      <strong>{{ label }}</strong>
+      {% if current_user.is_admin %}
+      <a href="{{ url_for('reports.export', module_key=key, export_format='csv') }}">CSV</a>
+      <a href="{{ url_for('reports.export', module_key=key, export_format='excel') }}">Excel</a>
+      <a href="{{ url_for('reports.export', module_key=key, export_format='pdf') }}">PDF</a>
+      {% else %}
+      <span>Read only</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

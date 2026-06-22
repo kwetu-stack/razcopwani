@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ config.title }} Detail | RAZCO PWANI™{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>{{ config.title }} Profile</h1><p>Full record details and linked operational actions.</p></div>
+  <div class="page-actions">
+    <a class="btn btn-outline-secondary" href="{{ url_for(config.endpoint ~ '.index') }}">Back</a>
+    {% if current_user.is_admin %}
+    <a class="btn btn-cyan" href="{{ url_for(config.endpoint ~ '.edit', record_id=row.id) }}">Edit</a>
+    {% endif %}
+  </div>
+</div>
+<div class="card kwetu-card">
+  <div class="row g-3 detail-grid">
+    {% for field, kind, choices, required in config.fields %}
+    <div class="col-md-6 col-xl-4">
+      <span>{{ field.replace('_',' ').title() }}</span>
+      <strong>{{ display_value(row, field) }}</strong>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Login | RAZCO PWANI™{% endblock %}
+{% block content %}
+<div class="auth-panel">
+  <div class="auth-brand">
+    <h1>RAZCO PWANI™</h1>
+    <p>Coast Growth Management System</p>
+  </div>
+  <form method="post" class="card kwetu-card auth-card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Sign in</h2>
+    <label class="form-label">Username</label>
+    <input class="form-control" name="username" required autofocus>
+    <label class="form-label mt-3">Password</label>
+    <input class="form-control" name="password" type="password" required>
+    <button class="btn btn-cyan w-100 mt-4">Login</button>
+  </form>
+</div>
+{% endblock %}

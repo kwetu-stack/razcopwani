@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ config.title }} Print</title>
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="print-body">
+  <h1>RAZCO PWANI™</h1>
+  <h2>{{ config.title }} Report</h2>
+  <p>Generated {{ generated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+  <table>
+    <thead><tr>{% for field in config.table %}<th>{{ field.replace('_',' ').title() }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>{% for field in config.table %}<td>{{ display_value(row, field) }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>window.print();</script>
+</body>
+</html>
