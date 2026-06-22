@@ -88,6 +88,25 @@ def create_products():
     db.session.add_all(rows)
 
 
+def sync_products():
+    actual_codes = {product["product_code"] for product in REAL_PRODUCTS}
+    Product.query.filter(~Product.product_code.in_(actual_codes)).delete(synchronize_session=False)
+
+    existing = {product.product_code: product for product in Product.query.all()}
+    for product in REAL_PRODUCTS:
+        row = existing.get(product["product_code"])
+        if row is None:
+            row = Product(product_code=product["product_code"])
+            db.session.add(row)
+        row.product_name = product["product_name"]
+        row.category = product["category"]
+        row.brand = product["brand"]
+        row.unit_size = product["unit_size"]
+        row.selling_price = 0
+        row.status = "Active"
+        row.notes = "Actual Razco product catalog item."
+
+
 def create_customers():
     channel_map = {channel.channel_name: channel for channel in Channel.query.all()}
     named = {
@@ -342,7 +361,9 @@ def seed_database(reset=False):
     else:
         db.create_all()
         if User.query.first():
-            print("RAZCO PWANI database already contains data. Seed skipped.")
+            sync_products()
+            db.session.commit()
+            print("RAZCO PWANI product catalog synced.")
             return False
     create_users()
     create_channels()
