@@ -505,6 +505,8 @@ def register_crud(module_key):
             page=page, per_page=15, error_out=False
         )
         kpis = [(label, kpi_value(config, spec)) for label, spec in config["kpis"]]
+        request_args = request.args.to_dict()
+        request_args.pop("page", None)
         return render_template(
             "module/index.html",
             config=config,
@@ -517,7 +519,7 @@ def register_crud(module_key):
             customers=choices_from_model(Customer, "id", "customer_name"),
             routes=choices_from_model(Route, "id", "route_name"),
             display_value=display_value,
-            request_args=request.args,
+            request_args=request_args,
         )
 
     @bp.route("/create", methods=["GET", "POST"])
