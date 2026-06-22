@@ -1,3 +1,4 @@
+import sys
 from datetime import date, time, timedelta
 from random import choice, randint, random, seed as random_seed
 
@@ -356,8 +357,14 @@ def create_action_plans():
     db.session.add_all(rows)
 
 
-def seed_database():
-    reset_database()
+def seed_database(reset=False):
+    if reset:
+        reset_database()
+    else:
+        db.create_all()
+        if User.query.first():
+            print("RAZCO PWANI database already contains data. Seed skipped.")
+            return False
     create_users()
     create_channels()
     create_products()
@@ -370,10 +377,12 @@ def seed_database():
     create_lost_accounts()
     create_action_plans()
     db.session.commit()
+    return True
 
 
 if __name__ == "__main__":
     app = create_app()
     with app.app_context():
-        seed_database()
-        print("RAZCO PWANI database seeded successfully.")
+        seeded = seed_database(reset="--reset" in sys.argv)
+        if seeded:
+            print("RAZCO PWANI database seeded successfully.")
