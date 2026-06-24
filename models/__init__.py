@@ -7,6 +7,7 @@ from .action_plan import ActionPlan
 from .channel import Channel
 from .competitor import CompetitorActivity
 from .customer import Customer
+from .daily_sale import DailySale
 from .lost_account import LostAccount
 from .opportunity import Opportunity
 from .product import Product
@@ -22,6 +23,7 @@ __all__ = [
     "Channel",
     "CompetitorActivity",
     "Customer",
+    "DailySale",
     "LostAccount",
     "Opportunity",
     "Product",

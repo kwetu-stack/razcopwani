@@ -7,15 +7,19 @@ from flask_wtf import CSRFProtect
 from config import Config
 from models import User, db
 
+from blueprints.daily_sales.routes import daily_sales_bp
+
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
+
 csrf = CSRFProtect()
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
     app.config["UPLOAD_FOLDER"].mkdir(parents=True, exist_ok=True)
     app.config["REPORT_FOLDER"].mkdir(parents=True, exist_ok=True)
 
@@ -37,11 +41,13 @@ def create_app():
     from blueprints.swot.routes import swot_bp
     from blueprints.visits.routes import visits_bp
 
+    # Register Blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(swot_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(products_bp)
+    app.register_blueprint(daily_sales_bp)
     app.register_blueprint(channels_bp)
     app.register_blueprint(routes_bp)
     app.register_blueprint(visits_bp)
@@ -76,7 +82,14 @@ def load_user(user_id):
 
 if __name__ == "__main__":
     app = create_app()
+
     with app.app_context():
         db.create_all()
+
     port = int(os.getenv("PORT", "5000"))
-    app.run(debug=False, host="0.0.0.0", port=port)
+
+    app.run(
+        debug=False,
+        host="0.0.0.0",
+        port=port
+    )
