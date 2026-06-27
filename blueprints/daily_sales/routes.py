@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import (
     Blueprint,
@@ -102,14 +102,16 @@ def index():
             "success"
         )
 
+        next_date = selected_date + timedelta(days=1)
+
         return redirect(
 
-            url_for(
-                "daily_sales.index",
-                sale_date=selected_date.strftime("%Y-%m-%d")
-            )
+    url_for(
+        "daily_sales.index",
+        sale_date=next_date.strftime("%Y-%m-%d")
+    )
 
-        )
+)
     date_string = request.args.get("sale_date")
 
     if date_string:
@@ -148,13 +150,16 @@ def index():
         )
 
         cumulative_sales[category] = float(total)
+        total_cumulative = sum(cumulative_sales.values())
 
     return render_template(
     "daily_sales/index.html",
     sales_categories=SALES_CATEGORIES,
     selected_date=selected_date,
     today_dict=sales_data,
-    cumulative_dict=cumulative_sales,
+cumulative_dict=cumulative_sales,
+total_cumulative=total_cumulative,
 )
+
 
     

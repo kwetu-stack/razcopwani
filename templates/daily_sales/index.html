@@ -27,12 +27,13 @@
                     <label class="form-label">Date</label>
 
                     <input
-                        type="date"
-                        class="form-control"
-                        name="sale_date"
-                        value="{{ selected_date }}"
-                        required
-                    >
+    type="date"
+    class="form-control"
+    id="saleDate"
+    name="sale_date"
+    value="{{ selected_date }}"
+    required
+>
 
                 </div>
 
@@ -97,18 +98,26 @@
 
                     <tr class="table-info">
 
-                        <th>Total</th>
+    <th>Total</th>
 
-                        <th
-                            id="totalSales"
-                            class="text-end"
-                        >
-                            0
-                        </th>
+    <th
+        id="totalSales"
+        class="text-end"
+    >
+        0
+    </th>
 
-                        <th></th>
+    <th class="text-end">
 
-                    </tr>
+        <strong>
+
+            {{ "{:,.0f}".format(total_cumulative) }}
+
+        </strong>
+
+    </th>
+
+</tr>
 
                 </tbody>
 
@@ -155,6 +164,12 @@ document.querySelectorAll(".sales-input").forEach(function(input) {
 });
 
 calculateTotal();
+document.getElementById("saleDate").addEventListener("change", function () {
+
+    window.location.href =
+        "/daily-sales/?sale_date=" + this.value;
+
+});
 
 </script>
 
