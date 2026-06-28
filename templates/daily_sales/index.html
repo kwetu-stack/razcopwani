@@ -27,13 +27,13 @@
                     <label class="form-label">Date</label>
 
                     <input
-    type="date"
-    class="form-control"
-    id="saleDate"
-    name="sale_date"
-    value="{{ selected_date }}"
-    required
->
+                        type="date"
+                        class="form-control"
+                        id="saleDate"
+                        name="sale_date"
+                        value="{{ selected_date }}"
+                        required
+                    >
 
                 </div>
 
@@ -78,6 +78,7 @@
                                 value="{{ today_dict.get(category, 0) }}"
                                 min="0"
                                 step="0.01"
+                                {% if current_user.role|lower == "user" %}readonly{% endif %}
                             >
 
                         </td>
@@ -85,9 +86,7 @@
                         <td class="text-end">
 
                             <strong>
-
                                 {{ "{:,.0f}".format(cumulative_dict.get(category, 0)) }}
-
                             </strong>
 
                         </td>
@@ -98,30 +97,30 @@
 
                     <tr class="table-info">
 
-    <th>Total</th>
+                        <th>Total</th>
 
-    <th
-        id="totalSales"
-        class="text-end"
-    >
-        0
-    </th>
+                        <th
+                            id="totalSales"
+                            class="text-end"
+                        >
+                            0
+                        </th>
 
-    <th class="text-end">
+                        <th class="text-end">
 
-        <strong>
+                            <strong>
+                                {{ "{:,.0f}".format(total_cumulative) }}
+                            </strong>
 
-            {{ "{:,.0f}".format(total_cumulative) }}
+                        </th>
 
-        </strong>
-
-    </th>
-
-</tr>
+                    </tr>
 
                 </tbody>
 
             </table>
+
+            {% if current_user.role|lower != "user" %}
 
             <button
                 type="submit"
@@ -129,6 +128,8 @@
             >
                 Save Daily Sales
             </button>
+
+            {% endif %}
 
         </form>
 
@@ -164,6 +165,7 @@ document.querySelectorAll(".sales-input").forEach(function(input) {
 });
 
 calculateTotal();
+
 document.getElementById("saleDate").addEventListener("change", function () {
 
     window.location.href =
