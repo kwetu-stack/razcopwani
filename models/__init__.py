@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 from .action_plan import ActionPlan
+from .order import Order
+from .order_item import OrderItem
 from .channel import Channel
 from .competitor import CompetitorActivity
 from .customer import Customer
@@ -31,4 +33,6 @@ __all__ = [
     "Swot",
     "User",
     "Visit",
+    "Order",
+    "OrderItem",
 ]

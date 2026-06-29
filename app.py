@@ -8,6 +8,7 @@ from config import Config
 from models import User, db
 
 from blueprints.daily_sales.routes import daily_sales_bp
+from blueprints.orders.routes import orders_bp
 
 
 login_manager = LoginManager()
@@ -22,6 +23,7 @@ def create_app():
 
     app.config["UPLOAD_FOLDER"].mkdir(parents=True, exist_ok=True)
     app.config["REPORT_FOLDER"].mkdir(parents=True, exist_ok=True)
+    
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -56,6 +58,7 @@ def create_app():
     app.register_blueprint(lost_accounts_bp)
     app.register_blueprint(action_plans_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(orders_bp)
 
     @app.errorhandler(403)
     @login_required

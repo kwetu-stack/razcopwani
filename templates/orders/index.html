@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}RAZCO PWANI™ | Sales Order Booking{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header">
+
+        <h3 class="mb-0">
+            RAZCO PWANI™
+            <small class="text-muted">
+                Sales Order Booking
+            </small>
+        </h3>
+
+        <small class="text-muted">
+            Book customer orders for invoicing. Submitted orders cannot be edited.
+        </small>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                    Order Number
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="Auto Generated"
+                    readonly
+                >
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                    Order Date
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="Auto Generated"
+                    readonly
+                >
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                    Sales Representative
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ current_user.username }}"
+                    readonly
+                >
+
+            </div>
+
+        </div>
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Customer
+            </label>
+
+            <select class="form-select">
+
+                <option value="">
+                    -- Select Customer --
+                </option>
+
+                {% for customer in customers %}
+
+                <option value="{{ customer.id }}">
+                    {{ customer.customer_name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <hr>
+
+        <h5>
+            Products
+        </h5>
+
+        <table class="table table-bordered">
+
+            <thead>
+
+                <tr>
+
+                    <th width="80%">
+                        Product
+                    </th>
+
+                    <th width="20%">
+                        Quantity
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+
+                        <select class="form-select">
+
+                            <option value="">
+                                -- Select Product --
+                            </option>
+
+                            {% for product in products %}
+
+                            <option value="{{ product.id }}">
+                                {{ product.product_name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </td>
+
+                    <td>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            min="1"
+                            placeholder="Qty"
+                            disabled
+                        >
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <button
+            class="btn btn-outline-primary"
+            disabled
+        >
+            + Add Product
+        </button>
+
+        <hr>
+
+        <div class="mt-4">
+
+            <label class="form-label">
+                Remarks
+            </label>
+
+            <textarea
+                class="form-control"
+                rows="4"
+                disabled
+            ></textarea>
+
+        </div>
+
+        <div class="mt-4">
+
+            <button
+                class="btn btn-success"
+                disabled
+            >
+                Submit Order
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
