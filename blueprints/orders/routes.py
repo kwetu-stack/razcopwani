@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from flask import (
     Blueprint,
@@ -145,3 +145,64 @@ def index():
         customers=customers,
         products=products,
     )
+@orders_bp.route("/pending")
+@login_required
+def pending_orders():
+
+    orders = (
+        Order.query
+        .filter_by(status="Pending")
+        .order_by(Order.order_date.desc(), Order.id.desc())
+        .all()
+    )
+
+    return render_template(
+        "orders/pending.html",
+        orders=orders,
+    )
+@orders_bp.route("/<int:order_id>")
+@login_required
+def view_order(order_id):
+
+    order = Order.query.get_or_404(order_id)
+
+    return render_template(
+        "orders/view.html",
+        order=order,
+    )  
+@orders_bp.route("/<int:order_id>/invoice", methods=["POST"])
+@login_required
+def mark_invoiced(order_id):
+
+    order = Order.query.get_or_404(order_id)
+
+    if order.status == "Invoiced":
+
+        flash(
+            "Order has already been invoiced.",
+            "warning",
+        )
+
+        return redirect(
+            url_for(
+                "orders.view_order",
+                order_id=order.id,
+            )
+        )
+
+    order.status = "Invoiced"
+
+    order.invoiced_by_id = current_user.id
+
+    order.invoiced_at = datetime.now()
+
+    db.session.commit()
+
+    flash(
+        f"{order.order_number} marked as invoiced.",
+        "success",
+    )
+
+    return redirect(
+        url_for("orders.pending_orders")
+    )      

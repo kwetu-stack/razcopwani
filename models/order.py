@@ -44,6 +44,19 @@ class Order(db.Model):
         default="Pending"
     )
 
+    # Audit fields
+
+    invoiced_by_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=True
+    )
+
+    invoiced_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow,
@@ -57,7 +70,14 @@ class Order(db.Model):
 
     sales_rep = db.relationship(
         "User",
-        backref="orders"
+        foreign_keys=[sales_rep_id],
+        backref="sales_orders"
+    )
+
+    invoiced_by = db.relationship(
+        "User",
+        foreign_keys=[invoiced_by_id],
+        backref="invoiced_orders"
     )
 
     items = db.relationship(

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Order Details | RAZCO PWANI™{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <div>
+
+            <h3 class="mb-0">
+
+                RAZCO PWANI™
+
+                <small class="text-muted">
+                    Order Details
+                </small>
+
+            </h3>
+
+            <small class="text-muted">
+
+                Review order before invoicing.
+
+            </small>
+
+        </div>
+
+        <a
+            href="{{ url_for('orders.pending_orders') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Pending Orders
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label fw-bold">
+
+                    Order Number
+
+                </label>
+
+                <div class="form-control">
+
+                    {{ order.order_number }}
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label fw-bold">
+
+                    Order Date
+
+                </label>
+
+                <div class="form-control">
+
+                    {{ order.order_date.strftime("%d-%b-%Y") }}
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label fw-bold">
+
+                    Status
+
+                </label>
+
+                <div class="form-control">
+
+                    {{ order.status }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label fw-bold">
+
+                    Customer
+
+                </label>
+
+                <div class="form-control">
+
+                    {{ order.customer.customer_name }}
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label fw-bold">
+
+                    Sales Representative
+
+                </label>
+
+                <div class="form-control">
+
+                    {{ order.sales_rep.username }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <h5>
+
+            Ordered Products
+
+        </h5>
+
+        <table class="table table-bordered">
+
+            <thead class="table-light">
+
+                <tr>
+
+                    <th width="80%">
+                        Product
+                    </th>
+
+                    <th width="20%" class="text-end">
+                        Quantity
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in order.items %}
+
+                <tr>
+
+                    <td>
+
+                        {{ item.product.product_name }}
+
+                    </td>
+
+                    <td class="text-end">
+
+                        {{ item.quantity }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <div class="mt-4">
+
+            <label class="form-label fw-bold">
+
+                Remarks
+
+            </label>
+
+            <textarea
+                class="form-control"
+                rows="4"
+                readonly
+            >{{ order.remarks }}</textarea>
+
+        </div>
+
+        <div class="mt-4">
+
+            <form
+    method="POST"
+    action="{{ url_for('orders.mark_invoiced', order_id=order.id) }}"
+    class="d-inline"
+>
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    {% if order.status == "Pending" %}
+
+    <button
+        type="submit"
+        class="btn btn-success"
+        onclick="return confirm('Mark this order as invoiced?');"
+    >
+        Mark as Invoiced
+    </button>
+
+    {% else %}
+
+    <button
+        type="button"
+        class="btn btn-secondary"
+        disabled
+    >
+        Already Invoiced
+    </button>
+
+    {% endif %}
+
+</form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
