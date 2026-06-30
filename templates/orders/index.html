@@ -23,181 +23,277 @@
 
     <div class="card-body">
 
-        <div class="row">
+        <form method="POST">
 
-            <div class="col-md-4 mb-3">
+            <div class="row">
 
-                <label class="form-label">
-                    Order Number
-                </label>
+                <div class="col-md-4 mb-3">
 
-                <input
-                    type="text"
-                    class="form-control"
-                    value="Auto Generated"
-                    readonly
-                >
+                    <label class="form-label">
+                        Order Number
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="Auto Generated"
+                        readonly
+                    >
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <label class="form-label">
+                        Order Date
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="Auto Generated"
+                        readonly
+                    >
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <label class="form-label">
+                        Sales Representative
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="{{ current_user.username }}"
+                        readonly
+                    >
+
+                </div>
 
             </div>
 
-            <div class="col-md-4 mb-3">
+            <div class="mb-4">
 
                 <label class="form-label">
-                    Order Date
+                    Customer
                 </label>
 
-                <input
-                    type="text"
-                    class="form-control"
-                    value="Auto Generated"
-                    readonly
+                <select
+                    class="form-select"
+                    name="customer_id"
+                    required
                 >
+
+                    <option value="">
+                        -- Select Customer --
+                    </option>
+
+                    {% for customer in customers %}
+
+                    <option value="{{ customer.id }}">
+                        {{ customer.customer_name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
 
             </div>
 
-            <div class="col-md-4 mb-3">
+            <hr>
 
-                <label class="form-label">
-                    Sales Representative
-                </label>
+            <h5 class="mb-3">
+                Products
+            </h5>
 
-                <input
-                    type="text"
-                    class="form-control"
-                    value="{{ current_user.username }}"
-                    readonly
-                >
+            <table class="table table-bordered align-middle">
 
-            </div>
+                <thead class="table-light">
 
-        </div>
+                    <tr>
 
-        <div class="mb-4">
+                        <th width="65%">
+                            Product
+                        </th>
 
-            <label class="form-label">
-                Customer
-            </label>
+                        <th width="15%">
+                            Qty
+                        </th>
 
-            <select class="form-select">
+                        <th width="20%">
+                            Action
+                        </th>
 
-                <option value="">
-                    -- Select Customer --
-                </option>
+                    </tr>
 
-                {% for customer in customers %}
+                </thead>
 
-                <option value="{{ customer.id }}">
-                    {{ customer.customer_name }}
-                </option>
+                <tbody id="orderItems">
 
-                {% endfor %}
+    <tr class="order-row" id="templateRow">
 
-            </select>
+                        <td>
 
-        </div>
+                            <select
+                                class="form-select"
+                                name="product_id[]"
+                                required
+                            >
 
-        <hr>
+                                <option value="">
+                                    -- Select Product --
+                                </option>
 
-        <h5>
-            Products
-        </h5>
+                                {% for product in products %}
 
-        <table class="table table-bordered">
+                                <option value="{{ product.id }}">
+                                    {{ product.product_name }}
+                                </option>
 
-            <thead>
+                                {% endfor %}
 
-                <tr>
+                            </select>
 
-                    <th width="80%">
-                        Product
-                    </th>
+                        </td>
 
-                    <th width="20%">
-                        Quantity
-                    </th>
+                        <td>
 
-                </tr>
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="quantity[]"
+                                min="1"
+                                value="1"
+                                required
+                            >
 
-            </thead>
+                        </td>
 
-            <tbody>
+                        <td>
 
-                <tr>
+                            <button
+                                type="button"
+                                class="btn btn-outline-danger remove-row"
+                                disabled
+                            >
+                                Remove
+                            </button>
 
-                    <td>
+                        </td>
 
-                        <select class="form-select">
+                    </tr>
 
-                            <option value="">
-                                -- Select Product --
-                            </option>
+                </tbody>
 
-                            {% for product in products %}
-
-                            <option value="{{ product.id }}">
-                                {{ product.product_name }}
-                            </option>
-
-                            {% endfor %}
-
-                        </select>
-
-                    </td>
-
-                    <td>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            min="1"
-                            placeholder="Qty"
-                            disabled
-                        >
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-        <button
-            class="btn btn-outline-primary"
-            disabled
-        >
-            + Add Product
-        </button>
-
-        <hr>
-
-        <div class="mt-4">
-
-            <label class="form-label">
-                Remarks
-            </label>
-
-            <textarea
-                class="form-control"
-                rows="4"
-                disabled
-            ></textarea>
-
-        </div>
-
-        <div class="mt-4">
+            </table>
 
             <button
-                class="btn btn-success"
-                disabled
+                type="button"
+                id="addProduct"
+                class="btn btn-outline-primary"
             >
-                Submit Order
+                + Add Product
             </button>
 
-        </div>
+            <hr>
+
+            <div class="mt-4">
+
+                <label class="form-label">
+                    Remarks
+                </label>
+
+                <textarea
+                    class="form-control"
+                    name="remarks"
+                    rows="4"
+                    placeholder="Optional remarks..."
+                ></textarea>
+
+            </div>
+
+            <div class="mt-4">
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                    disabled
+                >
+                    Submit Order
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+const addButton = document.getElementById("addProduct");
+const tableBody = document.getElementById("orderItems");
+const templateRow = document.getElementById("templateRow");
+
+function updateRemoveButtons() {
+
+    const rows = document.querySelectorAll(".order-row");
+
+    rows.forEach(function(row, index) {
+
+        const button = row.querySelector(".remove-row");
+
+        button.disabled = rows.length === 1;
+
+    });
+
+}
+
+addButton.addEventListener("click", function() {
+
+    const newRow = templateRow.cloneNode(true);
+
+    newRow.removeAttribute("id");
+
+    newRow.querySelector("select").selectedIndex = 0;
+
+    newRow.querySelector("input").value = 1;
+
+    newRow.querySelector(".remove-row").disabled = false;
+
+    tableBody.appendChild(newRow);
+
+    updateRemoveButtons();
+
+});
+
+tableBody.addEventListener("click", function(e) {
+
+    if (!e.target.classList.contains("remove-row")) {
+        return;
+    }
+
+    const rows = document.querySelectorAll(".order-row");
+
+    if (rows.length === 1) {
+        return;
+    }
+
+    e.target.closest(".order-row").remove();
+
+    updateRemoveButtons();
+
+});
+
+updateRemoveButtons();
+
+</script>
 
 {% endblock %}
