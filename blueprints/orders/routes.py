@@ -1,7 +1,22 @@
-from flask import Blueprint, render_template
+from datetime import date
+
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_login import current_user, login_required
 
-from models import Customer, Product
+from models import (
+    db,
+    Customer,
+    Order,
+    OrderItem,
+    Product,
+)
 
 
 orders_bp = Blueprint(
@@ -11,9 +26,107 @@ orders_bp = Blueprint(
 )
 
 
-@orders_bp.route("/")
+def generate_order_number():
+
+    today = date.today()
+
+    prefix = f"RZ-{today.strftime('%Y%m%d')}"
+
+    count = (
+        Order.query.filter(
+            Order.order_number.like(f"{prefix}%")
+        ).count()
+    )
+
+    sequence = count + 1
+
+    return f"{prefix}-{sequence:04d}"
+
+
+@orders_bp.route("/", methods=["GET", "POST"])
 @login_required
 def index():
+
+    if request.method == "POST":
+
+        customer_id = request.form.get("customer_id")
+        remarks = request.form.get("remarks", "").strip()
+
+        product_ids = request.form.getlist("product_id[]")
+        quantities = request.form.getlist("quantity[]")
+
+        if not customer_id:
+
+            flash(
+                "Please select a customer.",
+                "warning",
+            )
+
+            return redirect(url_for("orders.index"))
+
+        try:
+
+            order = Order(
+
+                order_number=generate_order_number(),
+
+                order_date=date.today(),
+
+                customer_id=int(customer_id),
+
+                sales_rep_id=current_user.id,
+
+                remarks=remarks,
+
+                status="Pending",
+
+            )
+
+            db.session.add(order)
+
+            db.session.flush()
+
+            for product_id, quantity in zip(product_ids, quantities):
+
+                if not product_id:
+                    continue
+
+                qty = float(quantity or 0)
+
+                if qty <= 0:
+                    continue
+
+                item = OrderItem(
+
+                    order_id=order.id,
+
+                    product_id=int(product_id),
+
+                    quantity=qty,
+
+                )
+
+                db.session.add(item)
+
+            db.session.commit()
+
+            flash(
+                f"Order {order.order_number} created successfully.",
+                "success",
+            )
+
+            return redirect(
+                url_for("orders.index")
+            )
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            flash(
+                f"Error saving order: {e}",
+                "danger",
+            )
 
     customers = (
         Customer.query
