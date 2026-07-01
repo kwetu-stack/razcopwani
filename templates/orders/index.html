@@ -82,31 +82,44 @@
 
             <div class="mb-4">
 
-                <label class="form-label">
-                    Customer
-                </label>
+    <label class="form-label">
+        Customer
+    </label>
 
-                <select
-                    class="form-select"
-                    name="customer_id"
-                    required
-                >
+    <div class="input-group">
 
-                    <option value="">
-                        -- Select Customer --
-                    </option>
+        <select
+            class="form-select"
+            id="customerSelect"
+            name="customer_id"
+            required
+        >
 
-                    {% for customer in customers %}
+            <option value="">
+                -- Select Customer --
+            </option>
 
-                    <option value="{{ customer.id }}">
-                        {{ customer.customer_name }}
-                    </option>
+            {% for customer in customers %}
 
-                    {% endfor %}
+            <option value="{{ customer.id }}">
+                {{ customer.customer_name }}
+            </option>
 
-                </select>
+            {% endfor %}
 
-            </div>
+        </select>
+
+        <button
+            type="button"
+            class="btn btn-outline-secondary"
+            id="clearCustomer"
+        >
+            Clear
+        </button>
+
+    </div>
+
+</div>
 
             <hr>
 
@@ -146,10 +159,9 @@
                         <td>
 
                             <select
-                                class="form-select"
-                                name="product_id[]"
-                                required
-                            >
+    class="form-select product-select"
+    name="product_id[]"
+>
 
                                 <option value="">
                                     -- Select Product --
@@ -170,25 +182,34 @@
                         <td>
 
                             <input
-                                type="number"
-                                class="form-control"
-                                name="quantity[]"
-                                min="1"
-                                value="1"
-                                required
-                            >
-
+    type="number"
+    class="form-control quantity-input"
+    name="quantity[]"
+    min="1"
+    value="1"
+>
                         </td>
 
                         <td>
 
-                            <button
-                                type="button"
-                                class="btn btn-outline-danger remove-row"
-                                disabled
-                            >
-                                Remove
-                            </button>
+                            <div class="btn-group">
+
+    <button
+        type="button"
+        class="btn btn-outline-secondary clear-row"
+    >
+        Clear
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-outline-danger remove-row"
+        disabled
+    >
+        Remove
+    </button>
+
+</div>
 
                         </td>
 
@@ -250,6 +271,7 @@ const addButton = document.getElementById("addProduct");
 const tableBody = document.getElementById("orderItems");
 const templateRow = document.getElementById("templateRow");
 
+
 function updateRemoveButtons() {
 
     const rows = document.querySelectorAll(".order-row");
@@ -277,27 +299,87 @@ addButton.addEventListener("click", function() {
 
     tableBody.appendChild(newRow);
 
+    document.querySelector("form").addEventListener("submit", function (e) {
+
+    const rows = document.querySelectorAll(".order-row");
+
+    let hasProduct = false;
+
+    for (const row of rows) {
+
+        const product = row.querySelector(".product-select");
+        const qty = row.querySelector(".quantity-input");
+
+        if (product.value !== "") {
+
+            hasProduct = true;
+
+            if (qty.value === "" || Number(qty.value) <= 0) {
+
+                alert("Quantity must be greater than zero.");
+
+                e.preventDefault();
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    if (!hasProduct) {
+
+        alert("Please select at least one product.");
+
+        e.preventDefault();
+
+    }
+
+});
+
     updateRemoveButtons();
 
 });
 
 tableBody.addEventListener("click", function(e) {
 
-    if (!e.target.classList.contains("remove-row")) {
+    const row = e.target.closest(".order-row");
+
+    if (!row) {
         return;
     }
 
-    if (document.querySelectorAll(".order-row").length === 1) {
+    if (e.target.classList.contains("clear-row")) {
+
+        row.querySelector("select").selectedIndex = 0;
+
+        row.querySelector("input").value = 1;
+
         return;
+
     }
 
-    e.target.closest(".order-row").remove();
+    if (e.target.classList.contains("remove-row")) {
 
-    updateRemoveButtons();
+        if (document.querySelectorAll(".order-row").length === 1) {
+            return;
+        }
+
+        row.remove();
+
+        updateRemoveButtons();
+
+    }
 
 });
 
 updateRemoveButtons();
+document.getElementById("clearCustomer").addEventListener("click", function () {
+
+    document.getElementById("customerSelect").selectedIndex = 0;
+
+});
 
 </script>
 

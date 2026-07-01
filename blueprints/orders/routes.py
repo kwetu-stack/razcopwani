@@ -1,4 +1,9 @@
-from datetime import date, datetime
+from datetime import date
+
+from utils.timezone import (
+    nairobi_now,
+    nairobi_today,
+)
 
 from flask import (
     Blueprint,
@@ -28,7 +33,7 @@ orders_bp = Blueprint(
 
 def generate_order_number():
 
-    today = date.today()
+    today = nairobi_today()
 
     prefix = f"RZ-{today.strftime('%Y%m%d')}"
 
@@ -70,7 +75,7 @@ def index():
 
                 order_number=generate_order_number(),
 
-                order_date=date.today(),
+                order_date=nairobi_today(),
 
                 customer_id=int(customer_id),
 
@@ -194,7 +199,7 @@ def mark_invoiced(order_id):
 
     order.invoiced_by_id = current_user.id
 
-    order.invoiced_at = datetime.now()
+    order.invoiced_at = nairobi_now()
 
     db.session.commit()
 
@@ -205,4 +210,19 @@ def mark_invoiced(order_id):
 
     return redirect(
         url_for("orders.pending_orders")
-    )      
+    ) 
+@orders_bp.route("/invoiced")
+@login_required
+def invoiced_orders():
+
+    orders = (
+        Order.query
+        .filter(Order.status == "Invoiced")
+        .order_by(Order.invoiced_at.desc())
+        .all()
+    )
+
+    return render_template(
+        "orders/invoiced.html",
+        orders=orders,
+    )         
