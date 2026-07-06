@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 
 from utils.timezone import (
     nairobi_now,
@@ -23,12 +24,29 @@ from models import (
     Product,
 )
 
-
 orders_bp = Blueprint(
     "orders",
     __name__,
     url_prefix="/orders",
 )
+
+
+def normalize_price(value):
+    if value is None:
+        return Decimal("0")
+
+    try:
+        decimal_value = Decimal(str(value)).quantize(
+            Decimal("1"),
+            rounding=ROUND_HALF_UP,
+        )
+    except Exception:
+        return Decimal("0")
+
+    if decimal_value < 0:
+        return Decimal("0")
+
+    return decimal_value
 
 
 def generate_order_number():
@@ -37,11 +55,7 @@ def generate_order_number():
 
     prefix = f"RZ-{today.strftime('%Y%m%d')}"
 
-    count = (
-        Order.query.filter(
-            Order.order_number.like(f"{prefix}%")
-        ).count()
-    )
+    count = Order.query.filter(Order.order_number.like(f"{prefix}%")).count()
 
     sequence = count + 1
 
@@ -59,6 +73,7 @@ def index():
 
         product_ids = request.form.getlist("product_id[]")
         quantities = request.form.getlist("quantity[]")
+        prices = request.form.getlist("price[]")
 
         if not customer_id:
 
@@ -72,43 +87,34 @@ def index():
         try:
 
             order = Order(
-
                 order_number=generate_order_number(),
-
                 order_date=nairobi_today(),
-
                 customer_id=int(customer_id),
-
                 sales_rep_id=current_user.id,
-
                 remarks=remarks,
-
                 status="Pending",
-
             )
 
             db.session.add(order)
 
             db.session.flush()
 
-            for product_id, quantity in zip(product_ids, quantities):
+            for product_id, quantity, price in zip(product_ids, quantities, prices):
 
                 if not product_id:
                     continue
 
                 qty = float(quantity or 0)
+                price_value = normalize_price(price)
 
                 if qty <= 0:
                     continue
 
                 item = OrderItem(
-
                     order_id=order.id,
-
                     product_id=int(product_id),
-
                     quantity=qty,
-
+                    price=price_value,
                 )
 
                 db.session.add(item)
@@ -120,9 +126,7 @@ def index():
                 "success",
             )
 
-            return redirect(
-                url_for("orders.index")
-            )
+            return redirect(url_for("orders.index"))
 
         except Exception as e:
 
@@ -133,30 +137,23 @@ def index():
                 "danger",
             )
 
-    customers = (
-        Customer.query
-        .order_by(Customer.customer_name)
-        .all()
-    )
+    customers = Customer.query.order_by(Customer.customer_name).all()
 
-    products = (
-        Product.query
-        .order_by(Product.product_name)
-        .all()
-    )
+    products = Product.query.order_by(Product.product_name).all()
 
     return render_template(
         "orders/index.html",
         customers=customers,
         products=products,
     )
+
+
 @orders_bp.route("/pending")
 @login_required
 def pending_orders():
 
     orders = (
-        Order.query
-        .filter_by(status="Pending")
+        Order.query.filter_by(status="Pending")
         .order_by(Order.order_date.desc(), Order.id.desc())
         .all()
     )
@@ -165,6 +162,8 @@ def pending_orders():
         "orders/pending.html",
         orders=orders,
     )
+
+
 @orders_bp.route("/<int:order_id>")
 @login_required
 def view_order(order_id):
@@ -174,7 +173,9 @@ def view_order(order_id):
     return render_template(
         "orders/view.html",
         order=order,
-    )  
+    )
+
+
 @orders_bp.route("/<int:order_id>/invoice", methods=["POST"])
 @login_required
 def mark_invoiced(order_id):
@@ -208,16 +209,15 @@ def mark_invoiced(order_id):
         "success",
     )
 
-    return redirect(
-        url_for("orders.pending_orders")
-    ) 
+    return redirect(url_for("orders.pending_orders"))
+
+
 @orders_bp.route("/invoiced")
 @login_required
 def invoiced_orders():
 
     orders = (
-        Order.query
-        .filter(Order.status == "Invoiced")
+        Order.query.filter(Order.status == "Invoiced")
         .order_by(Order.invoiced_at.desc())
         .all()
     )
@@ -225,4 +225,4 @@ def invoiced_orders():
     return render_template(
         "orders/invoiced.html",
         orders=orders,
-    )         
+    )

@@ -133,12 +133,16 @@
 
                     <tr>
 
-                        <th width="65%">
+                        <th width="55%">
                             Product
                         </th>
 
-                        <th width="15%">
+                        <th width="12%">
                             Qty
+                        </th>
+
+                        <th width="13%">
+                            Price
                         </th>
 
                         <th width="20%">
@@ -186,7 +190,22 @@
     class="form-control quantity-input"
     name="quantity[]"
     min="1"
+    step="1"
     value="1"
+    style="width: 100%; max-width: 160px; min-width: 140px;"
+>
+                        </td>
+
+                        <td>
+
+                            <input
+    type="number"
+    class="form-control price-input"
+    name="price[]"
+    min="0"
+    step="1"
+    value="0"
+    style="max-width: 140px;"
 >
                         </td>
 
@@ -291,9 +310,11 @@ addButton.addEventListener("click", function() {
 
     newRow.removeAttribute("id");
 
-    newRow.querySelector("select").selectedIndex = 0;
+    newRow.querySelector(".product-select").selectedIndex = 0;
 
-    newRow.querySelector("input").value = 1;
+    newRow.querySelector(".quantity-input").value = 1;
+
+    newRow.querySelector(".price-input").value = 0;
 
     newRow.querySelector(".remove-row").disabled = false;
 
@@ -309,6 +330,7 @@ addButton.addEventListener("click", function() {
 
         const product = row.querySelector(".product-select");
         const qty = row.querySelector(".quantity-input");
+        const price = row.querySelector(".price-input");
 
         if (product.value !== "") {
 
@@ -317,6 +339,16 @@ addButton.addEventListener("click", function() {
             if (qty.value === "" || Number(qty.value) <= 0) {
 
                 alert("Quantity must be greater than zero.");
+
+                e.preventDefault();
+
+                return;
+
+            }
+
+            if (price.value === "" || Number(price.value) < 0) {
+
+                alert("Price must be zero or greater.");
 
                 e.preventDefault();
 
@@ -352,9 +384,11 @@ tableBody.addEventListener("click", function(e) {
 
     if (e.target.classList.contains("clear-row")) {
 
-        row.querySelector("select").selectedIndex = 0;
+        row.querySelector(".product-select").selectedIndex = 0;
 
-        row.querySelector("input").value = 1;
+        row.querySelector(".quantity-input").value = 1;
+
+        row.querySelector(".price-input").value = 0;
 
         return;
 

@@ -141,12 +141,16 @@
 
                 <tr>
 
-                    <th width="80%">
+                    <th width="65%">
                         Product
                     </th>
 
-                    <th width="20%" class="text-end">
+                    <th width="15%" class="text-end">
                         Quantity
+                    </th>
+
+                    <th width="20%" class="text-end">
+                        Price
                     </th>
 
                 </tr>
@@ -168,6 +172,12 @@
                     <td class="text-end">
 
                         {{ item.quantity }}
+
+                    </td>
+
+                    <td class="text-end">
+
+                        {{ item.price or 0 }}
 
                     </td>
 
