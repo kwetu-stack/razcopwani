@@ -88,26 +88,30 @@
 
     <div class="input-group">
 
-        <select
-            class="form-select"
+        <div class="position-relative flex-grow-1">
+
+            <input
+                type="text"
+                class="form-control"
+                id="customerInput"
+                autocomplete="off"
+                placeholder="Type customer name..."
+                required
+            >
+
+            <div
+                id="customerSuggestions"
+                class="list-group position-absolute w-100 shadow-sm"
+                style="display:none; z-index:1000; top:100%;"
+            ></div>
+
+        </div>
+
+        <input
+            type="hidden"
             id="customerSelect"
             name="customer_id"
-            required
         >
-
-            <option value="">
-                -- Select Customer --
-            </option>
-
-            {% for customer in customers %}
-
-            <option value="{{ customer.id }}">
-                {{ customer.customer_name }}
-            </option>
-
-            {% endfor %}
-
-        </select>
 
         <button
             type="button"
@@ -131,25 +135,30 @@
 
                 <thead class="table-light">
 
-                    <tr>
+<tr>
 
-                        <th width="55%">
-                            Product
-                        </th>
+    <th width="45%">
+        Product
+    </th>
 
-                        <th width="12%">
-                            Qty
-                        </th>
+    <th width="12%">
+        Qty
+    </th>
 
-                        <th width="13%">
-                            Price
-                        </th>
+    <th width="13%">
+        Price
+    </th>
 
-                        <th width="20%">
-                            Action
-                        </th>
+    <th width="15%">
+        Total
+    </th>
 
-                    </tr>
+    <th width="15%">
+        Action
+    </th>
+
+</tr>
+                    
 
                 </thead>
 
@@ -162,24 +171,27 @@
 
                         <td>
 
-                            <select
-    class="form-select product-select"
-    name="product_id[]"
->
+                            <div class="position-relative">
 
-                                    <option value="" selected>
-                                    -- Select Product --
-                                </option>
+                                <input
+                                    type="text"
+                                    class="form-control product-input"
+                                    autocomplete="off"
+                                    placeholder="Type product name..."
+                                >
 
-                                {% for product in products %}
+                                <div
+                                    class="list-group position-absolute w-100 shadow-sm autocomplete-suggestions"
+                                    style="display:none; z-index:1000; top:100%;"
+                                ></div>
 
-                                <option value="{{ product.id }}">
-                                    {{ product.product_name }}
-                                </option>
+                            </div>
 
-                                {% endfor %}
-
-                            </select>
+                            <input
+                                type="hidden"
+                                class="product-id-input"
+                                name="product_id[]"
+                            >
 
                         </td>
 
@@ -208,6 +220,17 @@
     style="width: 100%; max-width: 180px; min-width: 140px;"
 >
                         </td>
+                        <td>
+
+    <input
+        type="text"
+        class="form-control line-total"
+        value="0.00"
+        readonly
+        style="width: 100%; max-width: 180px; min-width: 140px;"
+    >
+
+</td>
 
                         <td>
 
@@ -239,20 +262,56 @@
             </table>
 
             <button
-                type="button"
-                id="addProduct"
-                class="btn btn-outline-primary"
-            >
-                + Add Product
-            </button>
+    type="button"
+    id="addProduct"
+    class="btn btn-outline-primary"
+>
+    + Add Product
+</button>
 
-            <hr>
+<div class="row mt-4">
 
-            <div class="mt-4">
+    <div class="col-md-5 ms-auto">
 
-                <label class="form-label">
-                    Remarks
-                </label>
+        <table class="table table-sm">
+
+            <tr>
+                <th>Subtotal (Excl. VAT)</th>
+                <td class="text-end">
+                    <span id="subtotalDisplay">0.00</span>
+                </td>
+            </tr>
+
+            <tr>
+                <th>VAT (16%)</th>
+                <td class="text-end">
+                    <span id="vatDisplay">0.00</span>
+                </td>
+            </tr>
+
+            <tr class="table-primary">
+
+                <th>Grand Total</th>
+
+                <th class="text-end">
+                    <span id="grandTotalDisplay">0.00</span>
+                </th>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+<hr>
+
+<div class="mt-4">
+
+    <label class="form-label">
+        Remarks
+    </label>
 
                 <textarea
                     class="form-control"
@@ -289,7 +348,19 @@
 const addButton = document.getElementById("addProduct");
 const tableBody = document.getElementById("orderItems");
 const templateRow = document.getElementById("templateRow");
-
+const customerInput = document.getElementById("customerInput");
+const customerSelect = document.getElementById("customerSelect");
+const customerSuggestions = document.getElementById("customerSuggestions");
+const customerOptions = {
+    {% for customer in customers %}
+    {{ customer.customer_name|tojson }}: {{ customer.id }},
+    {% endfor %}
+};
+const productOptions = {
+    {% for product in products %}
+    {{ product.product_name|tojson }}: {{ product.id }},
+    {% endfor %}
+};
 
 function updateRemoveButtons() {
 
@@ -304,23 +375,192 @@ function updateRemoveButtons() {
 
 }
 
+function attachAutocomplete(input, hiddenInput, suggestionsContainer, options) {
+
+    const syncSelection = function () {
+        const selectedName = input.value.trim();
+        const resolved = options[selectedName] || "";
+        console.debug("syncSelection:", { selectedName, resolved });
+        hiddenInput.value = resolved;
+    };
+
+    const renderSuggestions = function () {
+        const query = input.value.trim().toLowerCase();
+        suggestionsContainer.innerHTML = "";
+
+        if (!query) {
+            suggestionsContainer.style.display = "none";
+            return;
+        }
+
+        const matches = Object.keys(options)
+            .filter(function(name) {
+                return name.toLowerCase().startsWith(query);
+            })
+            .slice(0, 8);
+
+        if (!matches.length) {
+            suggestionsContainer.style.display = "none";
+            return;
+        }
+
+        matches.forEach(function(name) {
+            const item = document.createElement("button");
+            item.type = "button";
+            item.className = "list-group-item list-group-item-action";
+            item.textContent = name;
+            item.addEventListener("click", function () {
+                input.value = name;
+                const resolved = options[name] || "";
+                console.debug("suggestion.click:", { name, resolved });
+                hiddenInput.value = resolved;
+                suggestionsContainer.style.display = "none";
+            });
+            suggestionsContainer.appendChild(item);
+        });
+
+        suggestionsContainer.style.display = "block";
+    };
+
+    // Only render suggestions while typing. Do not sync the hidden input
+    // on every keystroke — syncSelection is called on explicit change or
+    // when the user clicks a suggestion.
+    input.addEventListener("input", function () {
+
+    // User started typing again.
+    // Previous selection is no longer valid.
+    hiddenInput.value = "";
+
+    renderSuggestions();
+
+});
+
+    input.addEventListener("focus", renderSuggestions);
+    input.addEventListener("change", syncSelection);
+    input.addEventListener("blur", function () {
+        setTimeout(function () {
+            suggestionsContainer.style.display = "none";
+        }, 150);
+    });
+}
+
+function attachProductAutocomplete(row) {
+
+    const productInput = row.querySelector(".product-input");
+    const productIdInput = row.querySelector(".product-id-input");
+    const suggestionsContainer = row.querySelector(".autocomplete-suggestions");
+
+    attachAutocomplete(productInput, productIdInput, suggestionsContainer, productOptions);
+
+}
+
+attachAutocomplete(customerInput, customerSelect, customerSuggestions, customerOptions);
+
 addButton.addEventListener("click", function() {
 
     const newRow = templateRow.cloneNode(true);
 
     newRow.removeAttribute("id");
 
-    newRow.querySelector(".product-select").selectedIndex = 0;
-
+    newRow.querySelector(".product-input").value = "";
+    newRow.querySelector(".product-id-input").value = "";
     newRow.querySelector(".quantity-input").value = 1;
-
     newRow.querySelector(".price-input").value = 0;
-
     newRow.querySelector(".remove-row").disabled = false;
+
+    attachProductAutocomplete(newRow);
+    calculateRowTotal(newRow);
+    calculateOrderTotals();
 
     tableBody.appendChild(newRow);
 
-    document.querySelector("form").addEventListener("submit", function (e) {
+    updateRemoveButtons();
+
+});
+
+tableBody.addEventListener("click", function(e) {
+
+    const row = e.target.closest(".order-row");
+
+    if (!row) {
+        return;
+    }
+
+    if (e.target.classList.contains("clear-row")) {
+
+        row.querySelector(".product-input").value = "";
+        row.querySelector(".product-id-input").value = "";
+
+        row.querySelector(".quantity-input").value = 1;
+
+        row.querySelector(".price-input").value = 0;
+        row.querySelector(".line-total").value = "0.00";
+
+calculateOrderTotals();
+
+        return;
+
+    }
+
+    if (e.target.classList.contains("remove-row")) {
+
+        if (document.querySelectorAll(".order-row").length === 1) {
+            return;
+        }
+
+        row.remove();
+
+        updateRemoveButtons();
+        calculateOrderTotals();
+
+    }
+
+});
+
+attachProductAutocomplete(templateRow);
+updateRemoveButtons();
+function resolveByPrefixOrExact(value, options) {
+    const q = (value || "").trim().toLowerCase();
+    if (!q) return "";
+
+    // exact match first
+    for (const name in options) {
+        if (name.toLowerCase() === q) return options[name];
+    }
+
+    // prefix match
+    for (const name in options) {
+        if (name.toLowerCase().startsWith(q)) return options[name];
+    }
+
+    return "";
+}
+tableBody.addEventListener("input", function (e) {
+
+    if (
+        e.target.classList.contains("quantity-input") ||
+        e.target.classList.contains("price-input")
+    ) {
+
+        calculateRowTotal(
+            e.target.closest(".order-row")
+        );
+
+    }
+
+});
+
+document.querySelector("form").addEventListener("submit", function (e) {
+
+    if (!customerSelect.value) {
+
+    alert("Please select a customer from the suggestions.");
+
+    e.preventDefault();
+
+    return;
+
+}
 
     const rows = document.querySelectorAll(".order-row");
 
@@ -328,11 +568,22 @@ addButton.addEventListener("click", function() {
 
     for (const row of rows) {
 
-        const product = row.querySelector(".product-select");
+        const productId = row.querySelector(".product-id-input");
+        const productInput = row.querySelector(".product-input");
         const qty = row.querySelector(".quantity-input");
         const price = row.querySelector(".price-input");
 
-        if (product.value !== "") {
+        // fallback: resolve product id by typed prefix
+        if (!productId.value && productInput.value.trim() !== "") {
+
+    alert("Please select a product from the suggestions.");
+
+    e.preventDefault();
+
+    return;
+
+}
+        if (productId.value !== "") {
 
             hasProduct = true;
 
@@ -369,52 +620,56 @@ addButton.addEventListener("click", function() {
     }
 
 });
-
-    updateRemoveButtons();
-
-});
-
-tableBody.addEventListener("click", function(e) {
-
-    const row = e.target.closest(".order-row");
-
-    if (!row) {
-        return;
-    }
-
-    if (e.target.classList.contains("clear-row")) {
-
-        row.querySelector(".product-select").selectedIndex = 0;
-
-        row.querySelector(".quantity-input").value = 1;
-
-        row.querySelector(".price-input").value = 0;
-
-        return;
-
-    }
-
-    if (e.target.classList.contains("remove-row")) {
-
-        if (document.querySelectorAll(".order-row").length === 1) {
-            return;
-        }
-
-        row.remove();
-
-        updateRemoveButtons();
-
-    }
-
-});
-
-updateRemoveButtons();
 document.getElementById("clearCustomer").addEventListener("click", function () {
 
-    document.getElementById("customerSelect").selectedIndex = 0;
+    customerInput.value = "";
+    customerSelect.value = "";
+    customerSuggestions.innerHTML = "";
+    customerSuggestions.style.display = "none";
 
 });
+function calculateRowTotal(row) {
 
-</script>
+    const qty =
+        parseFloat(row.querySelector(".quantity-input").value) || 0;
 
+    const price =
+        parseFloat(row.querySelector(".price-input").value) || 0;
+
+    const total = qty * price;
+
+    row.querySelector(".line-total").value =
+        total.toFixed(2);
+
+    calculateOrderTotals();
+
+}
+
+
+function calculateOrderTotals() {
+
+    let grandTotal = 0;
+
+    document.querySelectorAll(".line-total").forEach(function (input) {
+
+        grandTotal += parseFloat(input.value) || 0;
+
+    });
+
+    const vat = grandTotal * 16 / 116;
+
+    const subtotal = grandTotal - vat;
+
+    document.getElementById("subtotalDisplay").textContent =
+        subtotal.toFixed(2);
+
+    document.getElementById("vatDisplay").textContent =
+        vat.toFixed(2);
+
+    document.getElementById("grandTotalDisplay").textContent =
+        grandTotal.toFixed(2);
+
+}
+
+</script>,
 {% endblock %}

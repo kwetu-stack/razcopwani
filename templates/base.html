@@ -51,14 +51,7 @@
   ('orders.invoiced_orders','Invoiced Orders'),
 
   ('daily_sales.index','Daily Sales'),
-  ('channels.index','Channels'),
-  ('routes.index','Routes'),
-  ('visits.index','Visits'),
-  ('opportunities.index','Opportunities'),
-  ('competitors.index','Competitors'),
-  ('lost_accounts.index','Lost Accounts'),
-  ('action_plans.index','Action Plans'),
-  ('reports.index','Reports')
+  ('channels.index','Channels')
 ] %}
 
       <ul class="navbar-nav mx-auto mb-2 mb-xl-0">
@@ -72,6 +65,26 @@
         </li>
         {% endfor %}
       </ul>
+      <div class="d-flex align-items-center gap-2">
+
+    {% if current_user.is_admin %}
+    <a class="btn btn-sm btn-outline-info"
+       href="{{ url_for('auth.users') }}">
+        Users
+    </a>
+    {% endif %}
+
+    <a class="btn btn-sm btn-outline-light"
+       href="{{ url_for('auth.change_password') }}">
+        {{ current_user.username }}
+    </a>
+
+    <a class="btn btn-sm btn-cyan"
+       href="{{ url_for('auth.logout') }}">
+        Logout
+    </a>
+
+</div>
 
       <div class="d-flex align-items-center gap-2 user-menu">
 
@@ -82,10 +95,12 @@
         </a>
         {% endif %}
 
-        <a class="btn btn-sm btn-outline-light"
-           href="{{ url_for('auth.change_password') }}">
-          {{ current_user.username }}
-        </a>
+        {#
+<a class="btn btn-sm btn-outline-light"
+   href="{{ url_for('auth.change_password') }}">
+    {{ current_user.username }}
+</a>
+#}
 
         <a class="btn btn-sm btn-cyan"
            href="{{ url_for('auth.logout') }}">
