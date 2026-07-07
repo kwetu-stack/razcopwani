@@ -74,6 +74,96 @@ input, select, textarea {
     color: var(--text) !important;
 }
 
+.product-select,
+.quantity-input,
+.price-input {
+    background: var(--panel-2) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    color: var(--text) !important;
+    opacity: 1 !important;
+}
+
+.product-select option,
+.product-select option[value=""] {
+    color: var(--text) !important;
+    opacity: 1 !important;
+    font-weight: 700 !important;
+}
+
+.product-select option:hover,
+.product-select option:checked {
+    color: var(--text) !important;
+    opacity: 1 !important;
+}
+    color: var(--text) !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+}
+
+.form-control,
+.form-select {
+    color: var(--text) !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    color: var(--text) !important;
+    opacity: 1 !important;
+}
+
+input[readonly],
+input[readonly]:focus,
+select[readonly],
+select[readonly]:focus,
+textarea[readonly],
+textarea[readonly]:focus {
+    color: var(--text) !important;
+    background: var(--panel-2) !important;
+    opacity: 1 !important;
+    cursor: default;
+}
+
+label {
+    color: var(--text) !important;
+    opacity: 1 !important;
+    font-weight: 500;
+}
+
+.form-control::placeholder,
+.form-select option[value=""] {
+    color: var(--text) !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+}
+
+.product-select option {
+    color: #111 !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+}
+
+.product-select option:hover,
+.product-select option:checked {
+    color: #111 !important;
+    opacity: 1 !important;
+}
+
+.price-input {
+    width: 100% !important;
+    max-width: 180px;
+    min-width: 140px;
+}
+
+.price-input:focus,
+.product-select:focus,
+.quantity-input:focus {
+    background: var(--panel-2) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+    box-shadow: 0 0 0 0.2rem rgba(37,99,235,0.15);
+}
+
 /* BUTTONS */
 .btn-primary {
     background: var(--primary);
