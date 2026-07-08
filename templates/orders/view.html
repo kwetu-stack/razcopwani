@@ -39,91 +39,46 @@
 
     <div class="card-body">
 
-        <div class="row">
+        <div class="table-responsive mb-4">
 
-            <div class="col-md-4 mb-3">
+            <table class="table table-bordered align-middle">
 
-                <label class="form-label fw-bold">
+                <tbody>
 
-                    Order Number
+                    <tr>
 
-                </label>
+                        <th width="20%">Order Number</th>
+                        <td width="30%">{{ order.order_number }}</td>
 
-                <div class="form-control">
+                        <th width="20%">Order Date</th>
+                        <td width="30%">{{ order.order_date.strftime("%d-%b-%Y") }}</td>
 
-                    {{ order.order_number }}
+                    </tr>
 
-                </div>
+                    <tr>
 
-            </div>
+                        <th>Status</th>
+                        <td>{{ order.status }}</td>
 
-            <div class="col-md-4 mb-3">
+                        <th>Sales Representative</th>
+                        <td>{{ order.sales_rep.username }}</td>
 
-                <label class="form-label fw-bold">
+                    </tr>
 
-                    Order Date
+                    <tr>
 
-                </label>
+                        <th>Customer</th>
+                        <td colspan="3">
 
-                <div class="form-control">
+                            {{ order.customer.customer_name }}
 
-                    {{ order.order_date.strftime("%d-%b-%Y") }}
+                        </td>
 
-                </div>
+                    </tr>
 
-            </div>
+                </tbody>
 
-            <div class="col-md-4 mb-3">
-
-                <label class="form-label fw-bold">
-
-                    Status
-
-                </label>
-
-                <div class="form-control">
-
-                    {{ order.status }}
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label fw-bold">
-
-                    Customer
-
-                </label>
-
-                <div class="form-control">
-
-                    {{ order.customer.customer_name }}
-
-                </div>
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label fw-bold">
-
-                    Sales Representative
-
-                </label>
-
-                <div class="form-control">
-
-                    {{ order.sales_rep.username }}
-
-                </div>
-
-            </div>
+            </table>
 
         </div>
 
@@ -208,40 +163,40 @@
         <div class="mt-4">
 
             <form
-    method="POST"
-    action="{{ url_for('orders.mark_invoiced', order_id=order.id) }}"
-    class="d-inline"
->
+                method="POST"
+                action="{{ url_for('orders.mark_invoiced', order_id=order.id) }}"
+                class="d-inline"
+            >
 
-    <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ csrf_token() }}"
-    >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
 
-    {% if order.status == "Pending" %}
+                {% if order.status == "Pending" %}
 
-    <button
-        type="submit"
-        class="btn btn-success"
-        onclick="return confirm('Mark this order as invoiced?');"
-    >
-        Mark as Invoiced
-    </button>
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                    onclick="return confirm('Mark this order as invoiced?');"
+                >
+                    Mark as Invoiced
+                </button>
 
-    {% else %}
+                {% else %}
 
-    <button
-        type="button"
-        class="btn btn-secondary"
-        disabled
-    >
-        Already Invoiced
-    </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    disabled
+                >
+                    Already Invoiced
+                </button>
 
-    {% endif %}
+                {% endif %}
 
-</form>
+            </form>
 
         </div>
 
