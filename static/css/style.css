@@ -188,3 +188,8 @@ label {
 body {
     padding-top: 90px;
 }
+.autocomplete-suggestions .list-group-item{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

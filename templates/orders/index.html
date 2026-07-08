@@ -171,19 +171,33 @@
 
                         <td>
 
-                            <div class="position-relative">
+                            <div
+    class="position-relative"
+    style="min-width:450px;"
+>
 
-                                <input
-                                    type="text"
-                                    class="form-control product-input"
-                                    autocomplete="off"
-                                    placeholder="Type product name..."
-                                >
+    <input
+        type="text"
+        class="form-control product-input"
+        autocomplete="off"
+        placeholder="Type product name..."
+    >
 
-                                <div
-                                    class="list-group position-absolute w-100 shadow-sm autocomplete-suggestions"
-                                    style="display:none; z-index:1000; top:100%;"
-                                ></div>
+    <div
+        class="list-group position-absolute shadow-sm autocomplete-suggestions"
+        style="
+            display:none;
+            z-index:2000;
+            top:100%;
+            left:0;
+            width:450px;
+            max-height:300px;
+            overflow-y:auto;
+            white-space:nowrap;
+        "
+    ></div>
+
+</div>
 
                             </div>
 
