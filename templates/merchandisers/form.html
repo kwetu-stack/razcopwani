@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% if merchandiser %}
+    Edit Merchandiser
+{% else %}
+    New Merchandiser
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+
+        {% if merchandiser %}
+            Edit Merchandiser
+        {% else %}
+            New Merchandiser
+        {% endif %}
+
+    </h2>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="Enter merchandiser name"
+                        value="{{ merchandiser.name if merchandiser else '' }}"
+                        required>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <label class="form-label">
+                        Status
+                    </label>
+
+                    <select
+                        name="is_active"
+                        class="form-select">
+
+                        <option
+                            value="1"
+                            {% if not merchandiser or merchandiser.is_active %}
+                            selected
+                            {% endif %}>
+                            Active
+                        </option>
+
+                        <option
+                            value="0"
+                            {% if merchandiser and not merchandiser.is_active %}
+                            selected
+                            {% endif %}>
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+
+                        {% if merchandiser %}
+                            Update Merchandiser
+                        {% else %}
+                            Save
+                        {% endif %}
+
+                    </button>
+
+                    <a
+                        href="{{ url_for('merchandisers.index') }}"
+                        class="btn btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

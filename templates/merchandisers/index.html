@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}
+Merchandisers
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Merchandisers</h2>
+
+        {% if current_user.is_admin %}
+
+        <a
+            href="{{ url_for('merchandisers.new') }}"
+            class="btn btn-success">
+
+            + New Merchandiser
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th width="260">Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for merchandiser in merchandisers %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ merchandiser.name }}
+
+                        </td>
+
+                        <td>
+
+                            {% if merchandiser.is_active %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if current_user.is_admin %}
+
+                            <div class="d-flex gap-2">
+
+                                <a
+                                    href="{{ url_for('merchandisers.edit', id=merchandiser.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
+
+                                    Edit
+
+                                </a>
+
+                                {% if merchandiser.is_active %}
+
+                                <a
+                                    href="{{ url_for('merchandisers.toggle', id=merchandiser.id) }}"
+                                    class="btn btn-sm btn-outline-warning"
+                                    onclick="return confirm('Deactivate this merchandiser?');">
+
+                                    Deactivate
+
+                                </a>
+
+                                {% else %}
+
+                                <a
+                                    href="{{ url_for('merchandisers.toggle', id=merchandiser.id) }}"
+                                    class="btn btn-sm btn-outline-success"
+                                    onclick="return confirm('Activate this merchandiser?');">
+
+                                    Activate
+
+                                </a>
+
+                                {% endif %}
+
+                            </div>
+
+                            {% else %}
+
+                            <span class="text-muted">
+
+                                —
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            class="text-center py-4">
+
+                            No merchandisers found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -11,11 +11,14 @@ from models import User, db
 from blueprints.daily_sales.routes import daily_sales_bp
 from blueprints.orders.routes import orders_bp
 from utils.database import initialize_database
+from blueprints.merchandisers.routes import merchandisers_bp
+from flask_migrate import Migrate
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 
 csrf = CSRFProtect()
+migrate = Migrate()
 
 
 
@@ -28,6 +31,8 @@ def create_app():
     app.config["REPORT_FOLDER"].mkdir(parents=True, exist_ok=True)
 
     db.init_app(app)
+
+    migrate.init_app(app, db)
 
     initialize_database(app)
 
@@ -64,6 +69,7 @@ def create_app():
     app.register_blueprint(action_plans_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(orders_bp)
+    app.register_blueprint(merchandisers_bp)
 
     @app.errorhandler(403)
     @login_required
