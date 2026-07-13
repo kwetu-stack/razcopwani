@@ -17,6 +17,9 @@ from .route import Route
 from .swot import Swot
 from .user import User
 from .visit import Visit
+from .merchandiser import Merchandiser
+from .outlet import Outlet
+from .outlet_visit import OutletVisit
 
 
 __all__ = [
@@ -35,4 +38,7 @@ __all__ = [
     "Visit",
     "Order",
     "OrderItem",
+    "Merchandiser",
+"Outlet",
+"OutletVisit",
 ]
