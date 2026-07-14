@@ -194,3 +194,74 @@ label {
     text-overflow: ellipsis;
 }
 /* Deployment trigger */
+/* ==========================================
+   ORDER BOOKING - MOBILE IMPROVEMENTS
+========================================== */
+
+@media (max-width: 768px) {
+
+    /* Product table scrolls instead of shrinking */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-responsive table {
+        min-width: 900px;
+    }
+
+    /* Keep all columns readable */
+    .table th,
+    .table td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    /* Product field */
+    .order-row .product-input {
+        min-width: 260px;
+    }
+
+    /* Quantity */
+    .order-row .quantity-input {
+        min-width: 80px;
+        text-align: center;
+        font-size: 1rem;
+    }
+
+    /* Price */
+    .order-row .price-input {
+        min-width: 120px;
+        font-size: 1rem;
+    }
+
+    /* Line Total */
+    .order-row .line-total {
+        min-width: 120px;
+        font-size: 1rem;
+    }
+
+    /* Action buttons */
+    .order-row .btn-group {
+        display: flex;
+        gap: 6px;
+    }
+
+    .order-row .btn {
+        white-space: nowrap;
+    }
+
+    /* Better spacing */
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table {
+        margin-bottom: 1rem;
+    }
+
+    /* Totals table */
+    .table-sm {
+        min-width: 280px;
+    }
+}
