@@ -93,7 +93,9 @@ Outlet Visit Summary
 
                 <div class="col-md-4">
                     <div class="text-muted">Created At</div>
-                    <strong>{{ visit.created_at.strftime("%Y-%m-%d %H:%M") }}</strong>
+                    <strong>
+                        {{ created_at_eat.strftime("%Y-%m-%d %H:%M") if created_at_eat else "-" }}
+                    </strong>
                 </div>
 
                 <div class="col-12">

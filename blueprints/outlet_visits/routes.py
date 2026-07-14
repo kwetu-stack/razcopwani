@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from flask import (
     Blueprint,
@@ -236,7 +236,14 @@ def view(id):
 
     visit = OutletVisit.query.get_or_404(id)
 
+    created_at_eat = (
+        visit.created_at + timedelta(hours=3)
+        if visit.created_at
+        else None
+    )
+
     return render_template(
         "outlet_visits/view.html",
         visit=visit,
+        created_at_eat=created_at_eat,
     )
