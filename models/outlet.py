@@ -13,10 +13,10 @@ class Outlet(TimestampMixin, db.Model):
         unique=True,
     )
 
-    status = db.Column(
-        db.String(20),
+    is_active = db.Column(
+        db.Boolean,
         nullable=False,
-        default="Active",
+        default=True,
     )
 
     def __repr__(self):

@@ -12,6 +12,8 @@ from blueprints.daily_sales.routes import daily_sales_bp
 from blueprints.orders.routes import orders_bp
 from utils.database import initialize_database
 from blueprints.merchandisers.routes import merchandisers_bp
+from blueprints.outlets.routes import outlets_bp
+from blueprints.outlet_visits.routes import outlet_visits_bp
 from flask_migrate import Migrate
 
 login_manager = LoginManager()
@@ -70,6 +72,8 @@ def create_app():
     app.register_blueprint(reports_bp)
     app.register_blueprint(orders_bp)
     app.register_blueprint(merchandisers_bp)
+    app.register_blueprint(outlets_bp)
+    app.register_blueprint(outlet_visits_bp)
 
     @app.errorhandler(403)
     @login_required

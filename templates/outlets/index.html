@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}
+Outlets
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Outlets</h2>
+
+        {% if current_user.is_admin %}
+
+        <a
+            href="{{ url_for('outlets.new') }}"
+            class="btn btn-success">
+
+            + New Outlet
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Outlet Name</th>
+                        <th>Status</th>
+                        <th width="260">Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for outlet in outlets %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ outlet.outlet_name }}
+
+                        </td>
+
+                        <td>
+
+                            {% if outlet.is_active %}
+
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if current_user.is_admin %}
+
+                            <div class="d-flex gap-2">
+
+                                <a
+                                    href="{{ url_for('outlets.edit', id=outlet.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
+
+                                    Edit
+
+                                </a>
+
+                                {% if outlet.is_active %}
+
+                                <a
+                                    href="{{ url_for('outlets.deactivate', id=outlet.id) }}"
+                                    class="btn btn-sm btn-outline-warning"
+                                    onclick="return confirm('Deactivate this outlet?');">
+
+                                    Deactivate
+
+                                </a>
+
+                                {% else %}
+
+                                <a
+                                    href="{{ url_for('outlets.activate', id=outlet.id) }}"
+                                    class="btn btn-sm btn-outline-success"
+                                    onclick="return confirm('Activate this outlet?');">
+
+                                    Activate
+
+                                </a>
+
+                                {% endif %}
+
+                            </div>
+
+                            {% else %}
+
+                            <span class="text-muted">
+
+                                -
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            class="text-center py-4">
+
+                            No outlets found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

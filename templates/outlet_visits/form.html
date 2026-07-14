@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}
+New Outlet Visit
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">New Outlet Visit</h2>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Visit Date</label>
+
+                        <input
+                            type="date"
+                            name="visit_date"
+                            class="form-control form-control-lg"
+                            value="{{ visit.visit_date if visit else today }}"
+                            required>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Merchandiser</label>
+
+                        <select
+                            name="merchandiser_id"
+                            class="form-select form-select-lg"
+                            required>
+
+                            <option value="">Select merchandiser</option>
+
+                            {% for merchandiser in merchandisers %}
+
+                            <option
+                                value="{{ merchandiser.id }}"
+                                {% if visit and visit.merchandiser_id|string == merchandiser.id|string %}
+                                selected
+                                {% endif %}>
+                                {{ merchandiser.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <label class="form-label">Outlet</label>
+
+                        <input
+                            type="hidden"
+                            name="outlet_id"
+                            id="outlet_id"
+                            value="{{ visit.outlet_id if visit else '' }}">
+
+                        <input
+                            type="text"
+                            list="outlet_options"
+                            id="outlet_search"
+                            class="form-control form-control-lg"
+                            placeholder="Search outlet"
+                            value="{% if visit and visit.outlet_id %}{% for outlet in outlets %}{% if visit.outlet_id|string == outlet.id|string %}{{ outlet.outlet_name }}{% endif %}{% endfor %}{% endif %}"
+                            autocomplete="off"
+                            required>
+
+                        <datalist id="outlet_options">
+
+                            {% for outlet in outlets %}
+
+                            <option
+                                value="{{ outlet.outlet_name }}"
+                                data-id="{{ outlet.id }}">
+                            </option>
+
+                            {% endfor %}
+
+                        </datalist>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Ice Cream & Daily Indulgence</label>
+
+                        <select
+                            name="icecream_stock"
+                            class="form-select form-select-lg"
+                            required>
+
+                            <option value="">Select status</option>
+
+                            {% for option in stock_options %}
+
+                            <option
+                                value="{{ option }}"
+                                {% if visit and visit.icecream_stock == option %}
+                                selected
+                                {% endif %}>
+                                {{ option }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Sauces & Condiments</label>
+
+                        <select
+                            name="sauces_stock"
+                            class="form-select form-select-lg"
+                            required>
+
+                            <option value="">Select status</option>
+
+                            {% for option in stock_options %}
+
+                            <option
+                                value="{{ option }}"
+                                {% if visit and visit.sauces_stock == option %}
+                                selected
+                                {% endif %}>
+                                {{ option }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Bakery & Confectionery</label>
+
+                        <select
+                            name="bakery_stock"
+                            class="form-select form-select-lg"
+                            required>
+
+                            <option value="">Select status</option>
+
+                            {% for option in stock_options %}
+
+                            <option
+                                value="{{ option }}"
+                                {% if visit and visit.bakery_stock == option %}
+                                selected
+                                {% endif %}>
+                                {{ option }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Private Label</label>
+
+                        <select
+                            name="private_label_stock"
+                            class="form-select form-select-lg"
+                            required>
+
+                            <option value="">Select status</option>
+
+                            {% for option in stock_options %}
+
+                            <option
+                                value="{{ option }}"
+                                {% if visit and visit.private_label_stock == option %}
+                                selected
+                                {% endif %}>
+                                {{ option }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">Freezer Condition</label>
+
+                        <select
+                            name="freezer_condition"
+                            class="form-select form-select-lg"
+                            required>
+
+                            <option value="">Select condition</option>
+
+                            {% for option in freezer_options %}
+
+                            <option
+                                value="{{ option }}"
+                                {% if visit and visit.freezer_condition == option %}
+                                selected
+                                {% endif %}>
+                                {{ option }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label d-block">Order Generated</label>
+
+                        <div class="btn-group btn-group-lg w-100" role="group">
+
+                            <input
+                                type="radio"
+                                class="btn-check"
+                                name="order_placed"
+                                id="order_yes"
+                                value="1"
+                                {% if visit and visit.order_placed == "1" %}
+                                checked
+                                {% endif %}
+                                required>
+
+                            <label
+                                class="btn btn-outline-success"
+                                for="order_yes">
+                                Yes
+                            </label>
+
+                            <input
+                                type="radio"
+                                class="btn-check"
+                                name="order_placed"
+                                id="order_no"
+                                value="0"
+                                {% if visit and visit.order_placed == "0" %}
+                                checked
+                                {% endif %}
+                                required>
+
+                            <label
+                                class="btn btn-outline-secondary"
+                                for="order_no">
+                                No
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <label class="form-label">Notes</label>
+
+                        <textarea
+                            name="notes"
+                            class="form-control form-control-lg"
+                            rows="5"
+                            placeholder="Optional notes">{{ visit.notes if visit else '' }}</textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success btn-lg">
+
+                        Save Visit
+
+                    </button>
+
+                    <a
+                        href="{{ url_for('outlet_visits.index') }}"
+                        class="btn btn-secondary btn-lg">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+const outletMap = {
+    {% for outlet in outlets %}
+    {{ outlet.outlet_name|tojson }}: "{{ outlet.id }}"{% if not loop.last %},{% endif %}
+    {% endfor %}
+};
+
+const normalizedOutletMap = Object.keys(outletMap).reduce(function (map, name) {
+    map[name.trim().toLowerCase()] = outletMap[name];
+    return map;
+}, {});
+
+const outletSearch = document.getElementById("outlet_search");
+const outletId = document.getElementById("outlet_id");
+
+function syncOutletId() {
+    outletId.value = normalizedOutletMap[outletSearch.value.trim().toLowerCase()] || "";
+}
+
+outletSearch.addEventListener("input", syncOutletId);
+outletSearch.addEventListener("change", syncOutletId);
+
+document.querySelector("form").addEventListener("submit", function (event) {
+    syncOutletId();
+
+    if (!outletId.value) {
+        outletSearch.setCustomValidity("Select an active outlet from the list.");
+        outletSearch.reportValidity();
+        event.preventDefault();
+    } else {
+        outletSearch.setCustomValidity("");
+    }
+});
+</script>
+
+{% endblock %}

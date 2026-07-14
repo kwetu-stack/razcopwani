@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}RAZCO PWANI™ | Sales Order Booking{% endblock %}
+{% block title %}
+RAZCO PWANI™ | Sales Order Booking
+{% endblock %}
 
 {% block content %}
 
@@ -28,8 +30,7 @@
             <input
                 type="hidden"
                 name="csrf_token"
-                value="{{ csrf_token() }}"
-            >
+                value="{{ csrf_token() }}">
 
             <div class="row">
 
@@ -43,8 +44,7 @@
                         type="text"
                         class="form-control"
                         value="Auto Generated"
-                        readonly
-                    >
+                        readonly>
 
                 </div>
 
@@ -58,8 +58,7 @@
                         type="text"
                         class="form-control"
                         value="Auto Generated"
-                        readonly
-                    >
+                        readonly>
 
                 </div>
 
@@ -73,8 +72,7 @@
                         type="text"
                         class="form-control"
                         value="{{ current_user.username }}"
-                        readonly
-                    >
+                        readonly>
 
                 </div>
 
@@ -82,48 +80,37 @@
 
             <div class="mb-4">
 
-    <label class="form-label">
-        Customer
-    </label>
+                <label class="form-label">
+                    Customer
+                </label>
 
-    <div class="input-group">
+                <input
+                    type="hidden"
+                    name="customer_id"
+                    id="customerSelect">
 
-        <div class="position-relative flex-grow-1">
+                <input
+                    type="text"
+                    id="customerInput"
+                    class="form-control form-control-lg"
+                    list="customerList"
+                    placeholder="Search customer..."
+                    autocomplete="off"
+                    required>
 
-            <input
-                type="text"
-                class="form-control"
-                id="customerInput"
-                autocomplete="off"
-                placeholder="Type customer name..."
-                required
-            >
+                <datalist id="customerList">
 
-            <div
-                id="customerSuggestions"
-                class="list-group position-absolute w-100 shadow-sm"
-                style="display:none; z-index:1000; top:100%;"
-            ></div>
+                    {% for customer in customers %}
 
-        </div>
+                    <option
+                        value="{{ customer.customer_name }}">
+                    </option>
 
-        <input
-            type="hidden"
-            id="customerSelect"
-            name="customer_id"
-        >
+                    {% endfor %}
 
-        <button
-            type="button"
-            class="btn btn-outline-secondary"
-            id="clearCustomer"
-        >
-            Clear
-        </button>
+                </datalist>
 
-    </div>
-
-</div>
+            </div>
 
             <hr>
 
@@ -135,151 +122,135 @@
 
                 <thead class="table-light">
 
-<tr>
+                    <tr>
 
-    <th width="45%">
-        Product
-    </th>
+                        <th width="45%">
+                            Product
+                        </th>
 
-    <th width="12%">
-        Qty
-    </th>
+                        <th width="12%">
+                            Qty
+                        </th>
 
-    <th width="13%">
-        Price
-    </th>
+                        <th width="13%">
+                            Price
+                        </th>
 
-    <th width="15%">
-        Total
-    </th>
+                        <th width="15%">
+                            Total
+                        </th>
 
-    <th width="15%">
-        Action
-    </th>
+                        <th width="15%">
+                            Action
+                        </th>
 
-</tr>
-                    
+                    </tr>
 
                 </thead>
 
                 <tbody id="orderItems">
+                    
 
-                    <tr
-                        class="order-row"
-                        id="templateRow"
-                    >
+<tr class="order-row" id="templateRow">
 
-                        <td>
+    <td>
 
-                            <div
-    <div
-    class="position-relative"
-    style="min-width:450px;"
->
+        <input
+            type="hidden"
+            class="product-id-input"
+            name="product_id[]">
 
-    <input
-        type="text"
-        class="form-control product-input"
-        autocomplete="off"
-        placeholder="Type product name..."
-    >
+        <input
+            type="text"
+            class="form-control product-input"
+            list="productList"
+            placeholder="Search product..."
+            autocomplete="off">
 
-    <div
-        class="list-group position-absolute shadow-sm autocomplete-suggestions"
-        style="
-            display:none;
-            z-index:2000;
-            top:100%;
-            left:0;
-            width:450px;
-            max-height:300px;
-            overflow-y:auto;
-            white-space:nowrap;
-        "
-    ></div>
+    </td>
 
-</div>
+    <td>
 
-<input
-    type="hidden"
-    class="product-id-input"
-    name="product_id[]"
->
+        <input
+            type="number"
+            class="form-control quantity-input"
+            name="quantity[]"
+            min="1"
+            step="1"
+            value="1">
 
-                        </td>
+    </td>
 
-                        <td>
+    <td>
 
-                            <input
-    type="number"
-    class="form-control quantity-input"
-    name="quantity[]"
-    min="1"
-    step="1"
-    value="1"
-    style="width: 100%; max-width: 160px; min-width: 140px;"
->
-                        </td>
+        <input
+            type="number"
+            class="form-control price-input"
+            name="price[]"
+            min="0"
+            step="1"
+            value="0">
 
-                        <td>
+    </td>
 
-                            <input
-    type="number"
-    class="form-control price-input"
-    name="price[]"
-    min="0"
-    step="1"
-    value="0"
-    style="width: 100%; max-width: 180px; min-width: 140px;"
->
-                        </td>
-                        <td>
+    <td>
 
-    <input
-        type="text"
-        class="form-control line-total"
-        value="0.00"
-        readonly
-        style="width: 100%; max-width: 180px; min-width: 140px;"
-    >
+        <input
+            type="text"
+            class="form-control line-total"
+            value="0.00"
+            readonly>
 
-</td>
+    </td>
 
-                        <td>
+    <td>
 
-                            <div class="btn-group">
-
-    <button
-        type="button"
-        class="btn btn-outline-secondary clear-row"
-    >
-        Clear
-    </button>
-
-    <button
-        type="button"
-        class="btn btn-outline-danger remove-row"
-        disabled
-    >
-        Remove
-    </button>
-
-</div>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
+        <div class="btn-group">
 
             <button
+                type="button"
+                class="btn btn-outline-secondary clear-row">
+
+                Clear
+
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-outline-danger remove-row"
+                disabled>
+
+                Remove
+
+            </button>
+
+        </div>
+
+    </td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<datalist id="productList">
+
+{% for product in products %}
+
+<option value="{{ product.product_name }}"></option>
+
+{% endfor %}
+
+</datalist>
+
+<button
     type="button"
     id="addProduct"
-    class="btn btn-outline-primary"
->
+    class="btn btn-outline-primary">
+
     + Add Product
+
 </button>
 
 <div class="row mt-4">
@@ -289,17 +260,27 @@
         <table class="table table-sm">
 
             <tr>
+
                 <th>Subtotal (Excl. VAT)</th>
+
                 <td class="text-end">
+
                     <span id="subtotalDisplay">0.00</span>
+
                 </td>
+
             </tr>
 
             <tr>
+
                 <th>VAT (16%)</th>
+
                 <td class="text-end">
+
                     <span id="vatDisplay">0.00</span>
+
                 </td>
+
             </tr>
 
             <tr class="table-primary">
@@ -307,7 +288,9 @@
                 <th>Grand Total</th>
 
                 <th class="text-end">
+
                     <span id="grandTotalDisplay">0.00</span>
+
                 </th>
 
             </tr>
@@ -323,324 +306,113 @@
 <div class="mt-4">
 
     <label class="form-label">
+
         Remarks
+
     </label>
 
-                <textarea
-                    class="form-control"
-                    name="remarks"
-                    rows="4"
-                    placeholder="Optional remarks..."
-                ></textarea>
+    <textarea
+        class="form-control"
+        name="remarks"
+        rows="4"
+        placeholder="Optional remarks..."></textarea>
 
-            </div>
+</div>
 
-            <div class="mt-4">
+<div class="mt-4">
 
-                <button
-                    type="submit"
-                    class="btn btn-success"
-                >
-                    Submit Order
-                </button>
+    <button
+        type="submit"
+        class="btn btn-success">
 
-            </div>
+        Submit Order
 
-        </form>
+    </button>
 
-    </div>
+</div>
+
+</form>
+
+</div>
 
 </div>
 
 {% endblock %}
-
 {% block scripts %}
 
 <script>
 
+const customerInput = document.getElementById("customerInput");
+const customerSelect = document.getElementById("customerSelect");
+
+const customerMap = {
+{% for customer in customers %}
+{{ customer.customer_name|tojson }}: "{{ customer.id }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+};
+
+const normalizedCustomerMap = Object.keys(customerMap).reduce(function(map, name) {
+    map[name.trim().toLowerCase()] = customerMap[name];
+    return map;
+}, {});
+
+function syncCustomerId() {
+
+    customerSelect.value =
+        normalizedCustomerMap[
+            customerInput.value.trim().toLowerCase()
+        ] || "";
+
+}
+
+customerInput.addEventListener("input", syncCustomerId);
+customerInput.addEventListener("change", syncCustomerId);
+
+
+
+const productMap = {
+{% for product in products %}
+{{ product.product_name|tojson }}: "{{ product.id }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+};
+
+const normalizedProductMap = Object.keys(productMap).reduce(function(map, name) {
+
+    map[name.trim().toLowerCase()] = productMap[name];
+
+    return map;
+
+}, {});
+
+
+
 const addButton = document.getElementById("addProduct");
 const tableBody = document.getElementById("orderItems");
 const templateRow = document.getElementById("templateRow");
-const customerInput = document.getElementById("customerInput");
-const customerSelect = document.getElementById("customerSelect");
-const customerSuggestions = document.getElementById("customerSuggestions");
-const customerOptions = {
-    {% for customer in customers %}
-    {{ customer.customer_name|tojson }}: {{ customer.id }},
-    {% endfor %}
-};
-const productOptions = {
-    {% for product in products %}
-    {{ product.product_name|tojson }}: {{ product.id }},
-    {% endfor %}
-};
 
-function updateRemoveButtons() {
 
-    const rows = document.querySelectorAll(".order-row");
 
-    rows.forEach(function(row) {
+function attachProductLookup(row) {
 
-        row.querySelector(".remove-row").disabled =
-            rows.length === 1;
+    const input = row.querySelector(".product-input");
+    const hidden = row.querySelector(".product-id-input");
 
-    });
+    function syncProduct() {
+
+        hidden.value =
+            normalizedProductMap[
+                input.value.trim().toLowerCase()
+            ] || "";
+
+    }
+
+    input.addEventListener("input", syncProduct);
+    input.addEventListener("change", syncProduct);
 
 }
 
-function attachAutocomplete(input, hiddenInput, suggestionsContainer, options) {
 
-    const syncSelection = function () {
-        const selectedName = input.value.trim();
-        const resolved = options[selectedName] || "";
-        console.debug("syncSelection:", { selectedName, resolved });
-        hiddenInput.value = resolved;
-    };
 
-    const renderSuggestions = function () {
-        const query = input.value.trim().toLowerCase();
-        suggestionsContainer.innerHTML = "";
-
-        if (!query) {
-            suggestionsContainer.style.display = "none";
-            return;
-        }
-
-        const matches = Object.keys(options)
-            .filter(function(name) {
-                return name.toLowerCase().startsWith(query);
-            })
-            .slice(0, 8);
-
-        if (!matches.length) {
-            suggestionsContainer.style.display = "none";
-            return;
-        }
-
-        matches.forEach(function(name) {
-            const item = document.createElement("button");
-            item.type = "button";
-            item.className = "list-group-item list-group-item-action";
-            item.textContent = name;
-            item.addEventListener("click", function () {
-                input.value = name;
-                const resolved = options[name] || "";
-                console.debug("suggestion.click:", { name, resolved });
-                hiddenInput.value = resolved;
-                suggestionsContainer.style.display = "none";
-            });
-            suggestionsContainer.appendChild(item);
-        });
-
-        suggestionsContainer.style.display = "block";
-    };
-
-    // Only render suggestions while typing. Do not sync the hidden input
-    // on every keystroke — syncSelection is called on explicit change or
-    // when the user clicks a suggestion.
-    input.addEventListener("input", function () {
-
-    // User started typing again.
-    // Previous selection is no longer valid.
-    hiddenInput.value = "";
-
-    renderSuggestions();
-
-});
-
-    input.addEventListener("focus", renderSuggestions);
-    input.addEventListener("change", syncSelection);
-    input.addEventListener("blur", function () {
-        setTimeout(function () {
-            suggestionsContainer.style.display = "none";
-        }, 150);
-    });
-}
-
-function attachProductAutocomplete(row) {
-
-    const productInput = row.querySelector(".product-input");
-    const productIdInput = row.querySelector(".product-id-input");
-    const suggestionsContainer = row.querySelector(".autocomplete-suggestions");
-
-    attachAutocomplete(productInput, productIdInput, suggestionsContainer, productOptions);
-
-}
-
-attachAutocomplete(customerInput, customerSelect, customerSuggestions, customerOptions);
-
-addButton.addEventListener("click", function() {
-
-    const newRow = templateRow.cloneNode(true);
-
-    newRow.removeAttribute("id");
-
-    newRow.querySelector(".product-input").value = "";
-    newRow.querySelector(".product-id-input").value = "";
-    newRow.querySelector(".quantity-input").value = 1;
-    newRow.querySelector(".price-input").value = 0;
-    newRow.querySelector(".remove-row").disabled = false;
-
-    attachProductAutocomplete(newRow);
-    calculateRowTotal(newRow);
-    calculateOrderTotals();
-
-    tableBody.appendChild(newRow);
-
-    updateRemoveButtons();
-
-});
-
-tableBody.addEventListener("click", function(e) {
-
-    const row = e.target.closest(".order-row");
-
-    if (!row) {
-        return;
-    }
-
-    if (e.target.classList.contains("clear-row")) {
-
-        row.querySelector(".product-input").value = "";
-        row.querySelector(".product-id-input").value = "";
-
-        row.querySelector(".quantity-input").value = 1;
-
-        row.querySelector(".price-input").value = 0;
-        row.querySelector(".line-total").value = "0.00";
-
-calculateOrderTotals();
-
-        return;
-
-    }
-
-    if (e.target.classList.contains("remove-row")) {
-
-        if (document.querySelectorAll(".order-row").length === 1) {
-            return;
-        }
-
-        row.remove();
-
-        updateRemoveButtons();
-        calculateOrderTotals();
-
-    }
-
-});
-
-attachProductAutocomplete(templateRow);
-updateRemoveButtons();
-function resolveByPrefixOrExact(value, options) {
-    const q = (value || "").trim().toLowerCase();
-    if (!q) return "";
-
-    // exact match first
-    for (const name in options) {
-        if (name.toLowerCase() === q) return options[name];
-    }
-
-    // prefix match
-    for (const name in options) {
-        if (name.toLowerCase().startsWith(q)) return options[name];
-    }
-
-    return "";
-}
-tableBody.addEventListener("input", function (e) {
-
-    if (
-        e.target.classList.contains("quantity-input") ||
-        e.target.classList.contains("price-input")
-    ) {
-
-        calculateRowTotal(
-            e.target.closest(".order-row")
-        );
-
-    }
-
-});
-
-document.querySelector("form").addEventListener("submit", function (e) {
-
-    if (!customerSelect.value) {
-
-    alert("Please select a customer from the suggestions.");
-
-    e.preventDefault();
-
-    return;
-
-}
-
-    const rows = document.querySelectorAll(".order-row");
-
-    let hasProduct = false;
-
-    for (const row of rows) {
-
-        const productId = row.querySelector(".product-id-input");
-        const productInput = row.querySelector(".product-input");
-        const qty = row.querySelector(".quantity-input");
-        const price = row.querySelector(".price-input");
-
-        // fallback: resolve product id by typed prefix
-        if (!productId.value && productInput.value.trim() !== "") {
-
-    alert("Please select a product from the suggestions.");
-
-    e.preventDefault();
-
-    return;
-
-}
-        if (productId.value !== "") {
-
-            hasProduct = true;
-
-            if (qty.value === "" || Number(qty.value) <= 0) {
-
-                alert("Quantity must be greater than zero.");
-
-                e.preventDefault();
-
-                return;
-
-            }
-
-            if (price.value === "" || Number(price.value) < 0) {
-
-                alert("Price must be zero or greater.");
-
-                e.preventDefault();
-
-                return;
-
-            }
-
-        }
-
-    }
-
-    if (!hasProduct) {
-
-        alert("Please select at least one product.");
-
-        e.preventDefault();
-
-    }
-
-});
-document.getElementById("clearCustomer").addEventListener("click", function () {
-
-    customerInput.value = "";
-    customerSelect.value = "";
-    customerSuggestions.innerHTML = "";
-    customerSuggestions.style.display = "none";
-
-});
 function calculateRowTotal(row) {
 
     const qty =
@@ -659,18 +431,18 @@ function calculateRowTotal(row) {
 }
 
 
+
 function calculateOrderTotals() {
 
     let grandTotal = 0;
 
-    document.querySelectorAll(".line-total").forEach(function (input) {
+    document.querySelectorAll(".line-total").forEach(function(item) {
 
-        grandTotal += parseFloat(input.value) || 0;
+        grandTotal += parseFloat(item.value) || 0;
 
     });
 
     const vat = grandTotal * 16 / 116;
-
     const subtotal = grandTotal - vat;
 
     document.getElementById("subtotalDisplay").textContent =
@@ -683,6 +455,150 @@ function calculateOrderTotals() {
         grandTotal.toFixed(2);
 
 }
+
+
+
+function updateRemoveButtons() {
+
+    const rows = document.querySelectorAll(".order-row");
+
+    rows.forEach(function(row) {
+
+        row.querySelector(".remove-row").disabled =
+            rows.length === 1;
+
+    });
+
+}
+
+
+
+attachProductLookup(templateRow);
+
+calculateRowTotal(templateRow);
+
+updateRemoveButtons();
+
+
+
+addButton.addEventListener("click", function() {
+
+    const row = templateRow.cloneNode(true);
+
+    row.removeAttribute("id");
+
+    row.querySelector(".product-input").value = "";
+    row.querySelector(".product-id-input").value = "";
+    row.querySelector(".quantity-input").value = 1;
+    row.querySelector(".price-input").value = 0;
+    row.querySelector(".line-total").value = "0.00";
+
+    attachProductLookup(row);
+
+    tableBody.appendChild(row);
+
+    calculateRowTotal(row);
+
+    updateRemoveButtons();
+
+});
+
+
+
+tableBody.addEventListener("input", function(e) {
+
+    const row = e.target.closest(".order-row");
+
+    if (!row) return;
+
+    if (
+        e.target.classList.contains("quantity-input") ||
+        e.target.classList.contains("price-input")
+    ) {
+
+        calculateRowTotal(row);
+
+    }
+
+});
+
+
+
+tableBody.addEventListener("click", function(e) {
+
+    const row = e.target.closest(".order-row");
+
+    if (!row) return;
+
+    if (e.target.classList.contains("clear-row")) {
+
+        row.querySelector(".product-input").value = "";
+        row.querySelector(".product-id-input").value = "";
+        row.querySelector(".quantity-input").value = 1;
+        row.querySelector(".price-input").value = 0;
+
+        calculateRowTotal(row);
+
+        return;
+
+    }
+
+    if (e.target.classList.contains("remove-row")) {
+
+        if (document.querySelectorAll(".order-row").length === 1)
+            return;
+
+        row.remove();
+
+        updateRemoveButtons();
+
+        calculateOrderTotals();
+
+    }
+
+});
+
+
+
+document.querySelector("form").addEventListener("submit", function(e) {
+
+    syncCustomerId();
+
+    if (!customerSelect.value) {
+
+        alert("Please select a customer.");
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+    const rows = document.querySelectorAll(".order-row");
+
+    let hasProduct = false;
+
+    for (const row of rows) {
+
+        const product = row.querySelector(".product-id-input");
+
+        if (product.value) {
+
+            hasProduct = true;
+
+        }
+
+    }
+
+    if (!hasProduct) {
+
+        alert("Please select at least one product.");
+
+        e.preventDefault();
+
+    }
+
+});
 
 </script>
 {% endblock %}

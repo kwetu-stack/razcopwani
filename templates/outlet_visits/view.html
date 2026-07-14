@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}
+Outlet Visit Summary
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+
+        <h2>Outlet Visit Summary</h2>
+
+        <div class="d-flex gap-2">
+
+            <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="window.print();">
+
+                Print
+
+            </button>
+
+            <a
+                href="{{ url_for('outlet_visits.index') }}"
+                class="btn btn-secondary">
+
+                Back
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <div class="text-muted">Visit Date</div>
+                    <strong>{{ visit.visit_date.strftime("%Y-%m-%d") }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Merchandiser</div>
+                    <strong>{{ visit.merchandiser.name }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Outlet</div>
+                    <strong>{{ visit.outlet.outlet_name }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Ice Cream & Daily Indulgence</div>
+                    <strong>{{ visit.icecream_stock }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Sauces & Condiments</div>
+                    <strong>{{ visit.sauces_stock }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Bakery & Confectionery</div>
+                    <strong>{{ visit.bakery_stock }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Private Label</div>
+                    <strong>{{ visit.private_label_stock }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Freezer Condition</div>
+                    <strong>{{ visit.freezer_condition }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Order Generated</div>
+                    <strong>{{ "Yes" if visit.order_placed else "No" }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Created By</div>
+                    <strong>{{ visit.creator.full_name }}</strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted">Created At</div>
+                    <strong>{{ visit.created_at.strftime("%Y-%m-%d %H:%M") }}</strong>
+                </div>
+
+                <div class="col-12">
+                    <div class="text-muted">Notes</div>
+                    <strong>{{ visit.notes or "-" }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
