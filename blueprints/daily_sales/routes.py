@@ -37,6 +37,7 @@ SALES_CATEGORIES = [
     "Presto",
     "Sprinkles",
     "Soft Mix",
+    "Taylor",
 ]
 
 
